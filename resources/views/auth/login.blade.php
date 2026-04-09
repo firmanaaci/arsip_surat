@@ -1,17 +1,22 @@
 <x-guest-layout>
-    <div class="flex min-h-screen items-center justify-center bg-green-50 dark:bg-gray-700">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex w-full max-w-6xl overflow-hidden">
-            
-            <div class="w-full md:w-1/2 p-6 sm:p-8 md:p-10 lg:p-12">
+    <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-100 via-white to-cyan-100 px-4 py-8 sm:px-6">
+        <div class="pointer-events-none absolute -left-20 top-12 h-64 w-64 rounded-full bg-emerald-300/35 blur-3xl"></div>
+        <div class="pointer-events-none absolute -right-16 -top-6 h-64 w-64 rounded-full bg-cyan-300/35 blur-3xl"></div>
+        <div class="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-lime-200/40 blur-3xl"></div>
 
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-green-700 dark:text-green-300 mb-2">Login</h2>
-                <p class="text-center text-gray-600 dark:text-gray-400 mb-8 md:mb-10 text-base md:text-lg">Silakan masuk ke akun Anda</p>
+        <div class="relative flex w-full max-w-6xl overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-[0_20px_70px_-30px_rgba(16,24,40,0.45)] backdrop-blur">
+            <div class="w-full p-6 sm:p-8 md:w-1/2 md:p-10 lg:p-12">
+                <p class="mb-3 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+                    Arsip Surat
+                </p>
+                <h2 class="text-3xl font-semibold tracking-tight text-slate-800 sm:text-4xl">Masuk ke Akun</h2>
+                <p class="mt-2 mb-8 text-sm text-slate-600 sm:mb-10 sm:text-base">Silakan masuk untuk melanjutkan pengelolaan surat masuk dan surat keluar.</p>
 
-                <form method="POST" action="{{ route('login') }}" class="space-y-6 md:space-y-7">
+                <form method="POST" action="{{ route('login') }}" class="space-y-5 sm:space-y-6">
                     @csrf
 
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                        <label for="email" class="mb-1.5 block text-sm font-semibold text-slate-700">Email</label>
                         <x-text-input 
                             id="email" 
                             type="email" 
@@ -20,49 +25,50 @@
                             required 
                             autofocus 
                             placeholder="you@example.com"
-                            class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm 
-                                   focus:ring-green-600 focus:border-green-600 dark:bg-gray-700 dark:text-white
-                                   transition duration-200 ease-in-out placeholder-gray-400 dark:placeholder-gray-500" />
-                        <x-input-error :messages="$errors->get('email')" class="mt-1 text-red-500 text-sm" />
+                            class="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-slate-800 shadow-sm placeholder:text-slate-400 transition duration-200 focus:border-emerald-500 focus:ring-emerald-500" />
+                        <x-input-error :messages="$errors->get('email')" class="mt-1.5 text-sm text-red-500" />
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                        <label for="password" class="mb-1.5 block text-sm font-semibold text-slate-700">Password</label>
                         <x-text-input 
                             id="password" 
                             type="password" 
                             name="password" 
                             required 
                             placeholder="********"
-                            class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm 
-                                   focus:ring-green-600 focus:border-green-600 dark:bg-gray-700 dark:text-white
-                                   transition duration-200 ease-in-out placeholder-gray-400 dark:placeholder-gray-500" />
-                        <x-input-error :messages="$errors->get('password')" class="mt-1 text-red-500 text-sm" />
+                            class="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-slate-800 shadow-sm placeholder:text-slate-400 transition duration-200 focus:border-emerald-500 focus:ring-emerald-500" />
+                        <x-input-error :messages="$errors->get('password')" class="mt-1.5 text-sm text-red-500" />
                     </div>
 
-                    <div class="flex items-center justify-between text-sm md:text-base">
+                    <div class="flex items-center justify-between text-sm">
                         <label class="flex items-center">
-                            <input type="checkbox" name="remember" class="rounded border-gray-300 dark:border-gray-600 text-green-600 dark:bg-gray-700 focus:ring-green-500">
-                            <span class="ml-2 text-gray-700 dark:text-gray-300">Ingat saya</span>
+                            <input type="checkbox" name="remember" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                            <span class="ml-2 text-slate-600">Ingat saya</span>
                         </label>
                         @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="text-green-600 hover:text-green-700 hover:underline dark:text-green-400 dark:hover:text-green-300 transition duration-200">Lupa password?</a>
+                            <a href="{{ route('password.request') }}" class="font-medium text-emerald-700 transition duration-200 hover:text-emerald-800 hover:underline">Lupa password?</a>
                         @endif
                     </div>
 
                     <div>
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md font-semibold 
-                                                     shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
-                                                     transform hover:scale-105 transition duration-300 ease-in-out">
+                        <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 py-3 font-semibold text-white shadow-lg shadow-emerald-800/20 transition duration-300 hover:-translate-y-0.5 hover:from-emerald-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                             Masuk
                         </button>
                     </div>
                 </form>
             </div>
 
-            <div class="hidden md:flex items-center justify-center w-1/2 
-                        bg-gradient-to-br from-green-600 to-green-800 dark:from-green-800 dark:to-green-950 p-8">
-                <img src="{{ asset('logokemenag.png') }}" alt="Logo Kemenag Besar" class="w-3/4 max-w-sm drop-shadow-lg">
+            <div class="relative hidden w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 p-10 md:flex">
+                <div class="absolute -left-8 top-8 h-40 w-40 rounded-full border border-white/15"></div>
+                <div class="absolute right-8 bottom-10 h-48 w-48 rounded-full border border-white/10"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_38%)]"></div>
+
+                <div class="relative text-center text-white">
+                    <img src="{{ asset('logokemenag.png') }}" alt="Logo Kemenag" class="mx-auto w-40 drop-shadow-2xl lg:w-48">
+                    <h3 class="mt-6 text-2xl font-semibold tracking-tight">Sistem Arsip Surat</h3>
+                    <p class="mx-auto mt-2 max-w-xs text-sm text-emerald-100/90">Aman, terstruktur, dan siap membantu pengelolaan dokumen harian Anda.</p>
+                </div>
             </div>
         </div>
     </div>
