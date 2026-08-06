@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Models\SuratKeluar;
+use App\Models\SuratMasuk;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\UserController;
@@ -38,12 +40,59 @@ Route::get('/laporan/surat-keluar', [LaporanController::class, 'exportSuratKelua
 Route::get('/redirect', [UserController::class, 'redirectAfterLogin'])->name('user.redirect');
 
 Route::get('/', function () {
-    return view('auth.login');
+    return view('landing');
 })->name('home');
 
+Route::get('/landing', function () {
+    return view('landing');
+})->name('landing');
+
+Route::get('/dashboard', function () {
+    $suratMasukCount = SuratMasuk::count();
+    $suratKeluarCount = SuratKeluar::count();
+    $suratMasukTerbaru = SuratMasuk::latest()->take(5)->get();
+    $suratKeluarTerbaru = SuratKeluar::latest('tanggal_surat')->take(5)->get();
+
+    // --- Data grafik 12 bulan terakhir ---
+    $months = collect(range(11, 0))->map(function ($i) {
+        return now()->subMonths($i);
+    });
+
+    $chartLabels = $months->map(fn($m) => $m->translatedFormat('M Y') ?? $m->format('M Y'))->toArray();
+
+    $chartMasuk = $months->map(function ($m) {
+        return SuratMasuk::whereYear('tanggal_surat', $m->year)
+            ->whereMonth('tanggal_surat', $m->month)
+            ->count();
+    })->toArray();
+
+    $chartKeluar = $months->map(function ($m) {
+        return SuratKeluar::whereYear('tanggal_surat', $m->year)
+            ->whereMonth('tanggal_surat', $m->month)
+            ->count();
+    })->toArray();
+
+    // --- Statistik ringkas ---
+    $masukHariIni    = SuratMasuk::whereDate('tanggal_surat', today())->count();
+    $keluarHariIni   = SuratKeluar::whereDate('tanggal_surat', today())->count();
+    $masukBulanIni   = SuratMasuk::whereYear('tanggal_surat', now()->year)->whereMonth('tanggal_surat', now()->month)->count();
+    $keluarBulanIni  = SuratKeluar::whereYear('tanggal_surat', now()->year)->whereMonth('tanggal_surat', now()->month)->count();
+    $masukTahunIni   = SuratMasuk::whereYear('tanggal_surat', now()->year)->count();
+    $keluarTahunIni  = SuratKeluar::whereYear('tanggal_surat', now()->year)->count();
+
+    return view('halamanutama', compact(
+        'suratMasukCount', 'suratKeluarCount',
+        'suratMasukTerbaru', 'suratKeluarTerbaru',
+        'chartLabels', 'chartMasuk', 'chartKeluar',
+        'masukHariIni', 'keluarHariIni',
+        'masukBulanIni', 'keluarBulanIni',
+        'masukTahunIni', 'keluarTahunIni'
+    ));
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::get('/halamanutama', function () {
-    return view('halamanutama');
-})->name('halamanutama');
+    return redirect()->route('dashboard');
+})->middleware(['auth', 'verified'])->name('halamanutama');
 
 Route::get('/inputsuratmasuk', function () {
     return view('inputsuratmasuk');
@@ -68,15 +117,6 @@ Route::get('/tablesuratkeluar', function () {
 Route::get('/laporan', function () {
     return view('laporan');
 })->name('laporan.index');
-
-
-Route::get('/', function () {
-    return view('auth.login');
-});
-//login admin
-Route::get('/halamanutama', function () {
-    return view('halamanutama');
-})->middleware(['auth', 'verified'])->name('halamanutama');
 
 
 require __DIR__.'/auth.php';

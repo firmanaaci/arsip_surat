@@ -6,6 +6,18 @@
 
         <div class="relative flex w-full max-w-6xl overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-[0_20px_70px_-30px_rgba(16,24,40,0.45)] backdrop-blur">
             <div class="w-full p-6 sm:p-8 md:w-1/2 md:p-10 lg:p-12">
+
+                {{-- Tombol kembali ke landing page --}}
+                <div class="mb-6">
+                    <a href="{{ route('home') }}"
+                       class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-600 shadow-sm transition duration-200 hover:-translate-x-0.5 hover:border-emerald-300 hover:text-emerald-700 hover:shadow-emerald-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Kembali ke Beranda
+                    </a>
+                </div>
+
                 <p class="mb-3 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
                     Arsip Surat
                 </p>

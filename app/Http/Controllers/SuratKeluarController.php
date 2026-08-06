@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SuratKeluar;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class SuratKeluarController extends Controller
 {
@@ -16,7 +17,7 @@ class SuratKeluarController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nomor_surat' => 'required|string|max:255',
+            'nomor_surat' => ['required', 'string', 'max:255', Rule::unique('surat_keluars', 'nomor_surat')],
             'tanggal_surat' => 'required|date',
             'sifat_surat' => 'required|string',
             'lampiran' => 'required|string|max:255',
@@ -74,7 +75,7 @@ class SuratKeluarController extends Controller
 
         // Validasi hanya kolom yang sesuai dengan model
         $request->validate([
-            'nomor_surat' => 'required|string|max:255',
+            'nomor_surat' => ['required', 'string', 'max:255', Rule::unique('surat_keluars', 'nomor_surat')->ignore($surat->id)],
             'tanggal_surat' => 'required|date',
             'sifat_surat' => 'required|string',
             'lampiran' => 'nullable|string|max:255',

@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistem Arsip Surat Digital Kementerian Agama - Kelola surat masuk dan keluar secara efisien, terorganisir, dan mudah diakses kapan saja.">
+    <title>Arsip Surat Digital | Kementerian Agama</title>
+    <link rel="icon" type="image/png" href="{{ asset('logokemenag.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 48px;
+            background: rgba(8, 17, 35, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        /* Center nav links absolutely */
+        .nav-links {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .nav-logo-box {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .nav-logo-box img { width: 24px; height: 24px; object-fit: contain; }
+        .nav-brand-text p:first-child { color: #fff; font-weight: 700; font-size: 16px; line-height: 1.2; }
+        .nav-brand-text p:last-child { color: rgba(52,211,153,0.7); font-weight: 500; font-size: 11px; }
+
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links a { color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .btn-ghost { display: none; }
+
+        .nav-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-ghost { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; text-decoration: none; padding: 8px 16px; border-radius: 10px; transition: all 0.2s; }
+        .btn-ghost:hover { color: #fff; background: rgba(255,255,255,0.06); }
+        .btn-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 10px 22px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+        }
+        .btn-green:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(16,185,129,0.5);
+            background: linear-gradient(135deg, #34d399, #10b981);
+        }
+        /* Icon-only variant for mobile */
+        .btn-green-icon {
+            display: none;
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border-radius: 12px;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .btn-green-icon:hover { transform: scale(1.05); }
+        .btn-green-icon .material-icons { font-size: 20px !important; }
+
+        /* Hamburger button */
+        .nav-hamburger {
+            display: none;
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .nav-hamburger:hover { background: rgba(255,255,255,0.12); }
+        .nav-hamburger .material-icons { font-size: 22px !important; color: rgba(255,255,255,0.8); }
+
+        /* Mobile drawer */
+        .nav-drawer {
+            display: none;
+            position: fixed;
+            top: 64px; left: 0; right: 0;
+            z-index: 998;
+            background: rgba(8, 17, 35, 0.97);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+        }
+        .nav-drawer.open {
+            max-height: 400px;
+            padding: 16px 0 24px;
+        }
+        .nav-drawer a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 28px;
+            color: rgba(255,255,255,0.6);
+            font-size: 15px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .nav-drawer a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.04);
+            border-left-color: #10b981;
+        }
+        .nav-drawer a .material-icons { font-size: 18px !important; color: rgba(52,211,153,0.6); }
+        .nav-drawer-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+            margin: 12px 28px;
+        }
+        .nav-drawer-cta {
+            margin: 4px 28px 0;
+        }
+        .nav-drawer-cta a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 14px;
+            border-left: none !important;
+            box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+        }
+        .nav-drawer-cta a:hover { background: linear-gradient(135deg, #34d399, #10b981); border-left-color: transparent; }
+        .material-icons { font-size: inherit !important; vertical-align: middle; }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+            overflow: hidden;
+            background: #081123;
+        }
+        /* Force dark bg via pseudo-element */
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #0a1628 0%, #0f2044 30%, #0d3d2e 65%, #072a1e 100%);
+            z-index: 0;
+        }
+        /* Grid pattern */
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
+            z-index: 1;
+        }
+        .hero > * { position: relative; z-index: 2; }
+
+        /* Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .orb-1 {
+            width: 520px; height: 520px;
+            background: radial-gradient(circle, rgba(16,185,129,0.3), transparent 70%);
+            top: -120px; left: -120px;
+            animation: floatOrb 9s ease-in-out infinite;
+        }
+        .orb-2 {
+            width: 420px; height: 420px;
+            background: radial-gradient(circle, rgba(59,130,246,0.22), transparent 70%);
+            top: 80px; right: -100px;
+            animation: floatOrb 11s ease-in-out infinite reverse;
+        }
+        .orb-3 {
+            width: 360px; height: 360px;
+            background: radial-gradient(circle, rgba(139,92,246,0.18), transparent 70%);
+            bottom: -60px; left: 35%;
+            animation: floatOrb 13s ease-in-out infinite;
+            animation-delay: -4s;
+        }
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(25px,-35px) scale(1.06); }
+            66% { transform: translate(-18px, 18px) scale(0.94); }
+        }
+
+        /* Ripple rings */
+        .ripple-wrap {
+            position: relative;
+            width: 96px; height: 96px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 40px;
+        }
+        .ripple-ring {
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 1.5px solid rgba(16,185,129,0.35);
+            animation: ripple 2.8s ease-out infinite;
+        }
+        .ripple-ring:nth-child(2) { animation-delay: 0.9s; border-color: rgba(16,185,129,0.22); }
+        .ripple-ring:nth-child(3) { animation-delay: 1.8s; border-color: rgba(16,185,129,0.12); }
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.6); opacity: 0; }
+        }
+        .logo-center {
+            position: relative; z-index: 10;
+            width: 96px; height: 96px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 60px rgba(16,185,129,0.5), 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .logo-center img { width: 58px; height: 58px; object-fit: contain; }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(16,185,129,0.35);
+            background: rgba(16,185,129,0.1);
+            box-shadow: 0 0 24px rgba(16,185,129,0.3);
+            margin-bottom: 28px;
+        }
+        .hero-badge .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #34d399;
+            animation: pulse 1.8s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        .hero-badge span { color: #6ee7b7; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.05;
+            letter-spacing: -1.5px;
+            margin-bottom: 24px;
+            max-width: 820px;
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #34d399 0%, #60a5fa 50%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            color: rgba(255,255,255,0.48);
+            font-size: 18px;
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto 44px;
+        }
+        .hero-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 64px;
+        }
+        .btn-hero-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 16px 36px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(16,185,129,0.4);
+        }
+        .btn-hero-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(16,185,129,0.55);
+            background: linear-gradient(135deg, #34d399, #10b981);
+        }
+        .btn-hero-outline {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 16px 36px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1.5px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+        .btn-hero-outline:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.35);
+            transform: translateY(-3px);
+        }
+
+        /* Scroll indicator */
+        .scroll-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.25);
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+        .scroll-hint .material-icons { font-size: 22px !important; }
+
+        /* ===== TICKER ===== */
+        .ticker-section {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 0;
+            overflow: hidden;
+        }
+        .ticker-track {
+            display: flex;
+            gap: 48px;
+            animation: ticker 25s linear infinite;
+            white-space: nowrap;
+            width: max-content;
+        }
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .ticker-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; flex-shrink: 0; }
+        @keyframes ticker {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* ===== STATS ===== */
+        .stats-section {
+            padding: 80px 48px;
+            background: #f8fafc;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .stat-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 28px 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            border-color: #10b981;
+        }
+        .stat-icon-box {
+            width: 52px; height: 52px;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .stat-icon-box .material-icons { font-size: 24px !important; color: #fff; }
+        .stat-value { font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1; margin-bottom: 8px; }
+        .stat-label { font-size: 13px; font-weight: 500; color: #64748b; }
+
+        /* ===== FEATURES ===== */
+        .features-section {
+            padding: 100px 48px;
+            background: #ffffff;
+        }
+        .section-header { text-align: center; margin-bottom: 64px; }
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .section-badge .material-icons { font-size: 14px !important; }
+        .badge-emerald { color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .badge-blue { color: #1e40af; background: #eff6ff; border: 1px solid #bfdbfe; }
+        .badge-violet { color: #5b21b6; background: #f5f3ff; border: 1px solid #ddd6fe; }
+        .section-title { font-size: 40px; font-weight: 900; color: #0f172a; margin-bottom: 16px; line-height: 1.1; }
+        .section-subtitle { font-size: 17px; color: #64748b; max-width: 580px; margin: 0 auto; line-height: 1.7; }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .feat-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.3s;
+        }
+        .feat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        }
+        .feat-icon-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+        .feat-icon-box {
+            width: 50px; height: 50px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .feat-icon-box .material-icons { font-size: 22px !important; }
+        .feat-tag { font-size: 11px; font-weight: 600; color: #94a3b8; background: #f1f5f9; padding: 4px 12px; border-radius: 999px; }
+        .feat-title { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+        .feat-desc { font-size: 14px; color: #64748b; line-height: 1.65; }
+
+        /* Colors */
+        .icon-blue { background: #eff6ff; color: #3b82f6; }
+        .icon-amber { background: #fffbeb; color: #f59e0b; }
+        .icon-emerald { background: #ecfdf5; color: #10b981; }
+        .icon-rose { background: #fff1f2; color: #f43f5e; }
+        .icon-violet { background: #f5f3ff; color: #8b5cf6; }
+        .icon-cyan { background: #ecfeff; color: #06b6d4; }
+
+        /* ===== HOW IT WORKS ===== */
+        .how-section {
+            padding: 100px 48px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #eff6ff 100%);
+        }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .step-card { text-align: center; }
+        .step-icon-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 68px; height: 68px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+        }
+        .step-icon-wrap .material-icons { font-size: 28px !important; color: #fff; }
+        .step-num {
+            position: absolute;
+            top: -8px; right: -8px;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: #0f172a;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .step-title { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+        .step-desc { font-size: 14px; color: #64748b; line-height: 1.65; max-width: 240px; margin: 0 auto; }
+
+        /* ===== CTA DARK ===== */
+        .cta-section {
+            position: relative;
+            overflow: hidden;
+            padding: 120px 48px;
+            text-align: center;
+            background: #081123;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, #0a1628 0%, #0f2044 30%, #0d3d2e 65%, #072a1e 100%);
+            z-index: 0;
+        }
+        .cta-section::after {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
+            z-index: 1;
+        }
+        .cta-section > * { position: relative; z-index: 2; }
+        .cta-orb-1 {
+            position: absolute; z-index: 1;
+            width: 400px; height: 400px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(16,185,129,0.22), transparent 70%);
+            top: -100px; left: -80px;
+            filter: blur(60px);
+        }
+        .cta-orb-2 {
+            position: absolute; z-index: 1;
+            width: 320px; height: 320px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 70%);
+            bottom: -80px; right: -60px;
+            filter: blur(60px);
+        }
+
+        .cta-brand { display: inline-flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+        .cta-logo {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(16,185,129,0.4);
+        }
+        .cta-logo img { width: 32px; height: 32px; object-fit: contain; }
+        .cta-title { font-size: 52px; font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 20px; }
+        .cta-sub { font-size: 18px; color: rgba(255,255,255,0.45); max-width: 560px; margin: 0 auto 44px; line-height: 1.7; }
+
+        .trust-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+        }
+        .trust-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.3); font-size: 13px; }
+        .trust-item .material-icons { font-size: 16px !important; color: rgba(52,211,153,0.55); }
+        .trust-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #050e1e;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .footer-main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 64px 48px;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr;
+            gap: 48px;
+        }
+        .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .footer-logo {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .footer-logo img { width: 24px; height: 24px; object-fit: contain; }
+        .footer-brand-name p:first-child { color: #fff; font-weight: 700; font-size: 15px; }
+        .footer-brand-name p:last-child { color: rgba(52,211,153,0.55); font-size: 11px; font-weight: 500; }
+        .footer-desc { color: rgba(255,255,255,0.3); font-size: 13px; line-height: 1.8; max-width: 280px; }
+
+        .footer-heading { color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 20px; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a {
+            color: rgba(255,255,255,0.35);
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: #34d399; }
+        .footer-links .material-icons { font-size: 14px !important; transition: transform 0.2s; }
+        .footer-links a:hover .material-icons { transform: translateX(4px); }
+
+        .footer-info-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; color: rgba(255,255,255,0.3); font-size: 13px; line-height: 1.5; }
+        .footer-info-item .material-icons { font-size: 17px !important; color: rgba(52,211,153,0.5); margin-top: 2px; flex-shrink: 0; }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 20px 48px;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-copy { color: rgba(255,255,255,0.2); font-size: 12px; }
+        .footer-made { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.2); font-size: 12px; }
+        .footer-made .material-icons { font-size: 14px !important; color: rgba(52,211,153,0.4); }
+
+        /* ===== REVEAL ANIMATION ===== */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .navbar { padding: 12px 20px; }
+            .nav-links { display: none; }
+            /* Hide desktop actions, show mobile controls */
+            .btn-ghost { display: none; }
+            .btn-green { display: none; }
+            .btn-green-icon { display: inline-flex; }
+            .nav-hamburger { display: inline-flex; }
+            .nav-drawer { display: block; }
+            /* Hide brand tagline on small screens */
+            .nav-brand-text p:last-child { display: none; }
+            .hero-title { font-size: 40px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .steps-grid { grid-template-columns: 1fr; }
+            .footer-main { grid-template-columns: 1fr; }
+            .stats-section, .features-section, .how-section, .cta-section { padding: 60px 24px; }
+        }
+        @media (max-width: 600px) {
+            .navbar { padding: 10px 16px; }
+            .nav-brand-text { display: none; }
+            .hero-title { font-size: 30px; letter-spacing: -0.5px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .cta-title { font-size: 34px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===========================
+     NAVBAR
+=========================== -->
+<nav class="navbar" id="main-navbar">
+    <a href="{{ route('home') }}" class="nav-brand">
+        <div class="nav-logo-box">
+            <img src="{{ asset('logokemenag.png') }}" alt="Logo Kemenag">
+        </div>
+        <div class="nav-brand-text">
+            <p>Arsip Surat</p>
+            <p>Kemenag</p>
+        </div>
+    </a>
+
+    <!-- Desktop nav links -->
+    <div class="nav-links">
+        <a href="#fitur">Fitur</a>
+        <a href="#statistik">Statistik</a>
+        <a href="#tentang">Tentang</a>
+    </div>
+
+    <!-- Desktop actions -->
+    <div class="nav-actions">
+        <a href="{{ route('login') }}" class="btn-green">
+            <span class="material-icons" style="font-size:16px!important">login</span>
+            Mulai Sekarang
+        </a>
+
+        <!-- Mobile: icon-only login -->
+        <a href="{{ route('login') }}" class="btn-green-icon" title="Masuk">
+            <span class="material-icons">login</span>
+        </a>
+
+        <!-- Mobile: hamburger -->
+        <button class="nav-hamburger" id="nav-toggle" aria-label="Buka menu" onclick="toggleNavDrawer()">
+            <span class="material-icons" id="nav-toggle-icon">menu</span>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile nav drawer -->
+<div class="nav-drawer" id="nav-drawer">
+    <a href="#fitur" onclick="closeNavDrawer()">
+        <span class="material-icons">stars</span>
+        Fitur
+    </a>
+    <a href="#statistik" onclick="closeNavDrawer()">
+        <span class="material-icons">bar_chart</span>
+        Statistik
+    </a>
+    <a href="#tentang" onclick="closeNavDrawer()">
+        <span class="material-icons">info</span>
+        Tentang
+    </a>
+    <div class="nav-drawer-divider"></div>
+    <div class="nav-drawer-cta">
+        <a href="{{ route('login') }}">
+            <span class="material-icons">rocket_launch</span>
+            Mulai Gunakan Sistem
+        </a>
+    </div>
+</div>
+
+
+<!-- ===========================
+     HERO
+=========================== -->
+<section class="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Logo with ripple -->
+    <div class="ripple-wrap">
+        <div class="ripple-ring"></div>
+        <div class="ripple-ring"></div>
+        <div class="ripple-ring"></div>
+        <div class="logo-center">
+            <img src="{{ asset('logokemenag.png') }}" alt="Logo Kemenag">
+        </div>
+    </div>
+
+    <!-- Badge -->
+    <div class="hero-badge">
+        <div class="dot"></div>
+        <span>Sistem Digital Resmi</span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="hero-title">
+        Kelola <span class="text-gradient">Arsip Surat</span><br>
+        Lebih Cerdas & Efisien
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="hero-sub">
+        Platform manajemen arsip surat digital terpadu untuk Kementerian Agama.
+        Kelola surat masuk dan keluar dengan mudah, cepat, dan terorganisir.
+    </p>
+
+    <!-- CTA -->
+    <div class="hero-buttons">
+        <a href="{{ route('login') }}" class="btn-hero-primary">
+            <span class="material-icons" style="font-size:22px!important">rocket_launch</span>
+            Mulai Gunakan Sistem
+        </a>
+        <a href="#fitur" class="btn-hero-outline">
+            <span class="material-icons" style="font-size:22px!important">explore</span>
+            Lihat Fitur
+        </a>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint">
+        <span style="letter-spacing:0.18em;">Scroll</span>
+        <span class="material-icons" style="font-size:22px!important">expand_more</span>
+    </div>
+</section>
+
+
+<!-- ===========================
+     TICKER
+=========================== -->
+<div class="ticker-section">
+    <div class="ticker-track">
+        @php $items = ['Surat Masuk','Surat Keluar','Laporan Digital','Pencarian Cepat','Export PDF','Manajemen Arsip','Kemenag RI','Sistem Terintegrasi','Data Aman','Akses Kapan Saja']; @endphp
+        @foreach(array_merge($items, $items) as $item)
+        <div class="ticker-item">
+            <div class="ticker-dot"></div>
+            <span>{{ $item }}</span>
+        </div>
+        @endforeach
+    </div>
+</div>
+
+
+<!-- ===========================
+     STATS
+=========================== -->
+<section id="statistik" class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card reveal">
+            <div class="stat-icon-box" style="background: linear-gradient(135deg,#10b981,#059669);">
+                <span class="material-icons">eco</span>
+            </div>
+            <div class="stat-value">100%</div>
+            <div class="stat-label">Digital & Paperless</div>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.1s">
+            <div class="stat-icon-box" style="background: linear-gradient(135deg,#3b82f6,#4f46e5);">
+                <span class="material-icons">access_time_filled</span>
+            </div>
+            <div class="stat-value">24/7</div>
+            <div class="stat-label">Akses Kapan Saja</div>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.2s">
+            <div class="stat-icon-box" style="background: linear-gradient(135deg,#8b5cf6,#7c3aed);">
+                <span class="material-icons">cloud_done</span>
+            </div>
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Kapasitas Penyimpanan</div>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.3s">
+            <div class="stat-icon-box" style="background: linear-gradient(135deg,#f59e0b,#d97706);">
+                <span class="material-icons">bolt</span>
+            </div>
+            <div class="stat-value">1×</div>
+            <div class="stat-label">Input Sekali Selesai</div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===========================
+     FEATURES
+=========================== -->
+<section id="fitur" class="features-section">
+    <div class="section-header reveal">
+        <div class="section-badge badge-emerald">
+            <span class="material-icons">stars</span>
+            Fitur Unggulan
+        </div>
+        <h2 class="section-title">Semua yang Anda Butuhkan</h2>
+        <p class="section-subtitle">Sistem arsip surat yang dirancang untuk memudahkan pengelolaan dokumen di lingkungan Kementerian Agama.</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feat-card reveal" style="border-top: 3px solid #3b82f6;">
+            <div class="feat-icon-row">
+                <div class="feat-icon-box icon-blue"><span class="material-icons">move_to_inbox</span></div>
+                <span class="feat-tag">Input & Tracking</span>
+            </div>
+            <div class="feat-title">Surat Masuk</div>
+            <div class="feat-desc">Catat dan kelola semua surat masuk dengan detail lengkap. Lampirkan file, tandai prioritas, dan lacak status penanganan.</div>
+        </div>
+        <div class="feat-card reveal" style="border-top: 3px solid #f59e0b; transition-delay:0.08s">
+            <div class="feat-icon-row">
+                <div class="feat-icon-box icon-amber"><span class="material-icons">outbox</span></div>
+                <span class="feat-tag">Administrasi</span>
+            </div>
+            <div class="feat-title">Surat Keluar</div>
+            <div class="feat-desc">Buat, daftarkan, dan arsipkan surat keluar secara sistematis. Nomor surat terurut otomatis untuk kemudahan administrasi.</div>
+        </div>
+        <div class="feat-card reveal" style="border-top: 3px solid #10b981; transition-delay:0.16s">
+            <div class="feat-icon-row">
+                <div class="feat-icon-box icon-emerald"><span class="material-icons">search</span></div>
+                <span class="feat-tag">Smart Search</span>
+            </div>
+            <div class="feat-title">Pencarian Cepat</div>
+            <div class="feat-desc">Temukan surat yang Anda butuhkan dalam hitungan detik. Filter berdasarkan tanggal, nomor, atau kata kunci.</div>
+        </div>
+        <div class="feat-card reveal" style="border-top: 3px solid #f43f5e; transition-delay:0.24s">
+            <div class="feat-icon-row">
+                <div class="feat-icon-box icon-rose"><span class="material-icons">picture_as_pdf</span></div>
+                <span class="feat-tag">Report</span>
+            </div>
+            <div class="feat-title">Laporan & Export</div>
+            <div class="feat-desc">Generate laporan dalam format PDF atau Excel. Rekap bulanan dan tahunan tersedia dengan satu klik.</div>
+        </div>
+        <div class="feat-card reveal" style="border-top: 3px solid #8b5cf6; transition-delay:0.32s">
+            <div class="feat-icon-row">
+                <div class="feat-icon-box icon-violet"><span class="material-icons">security</span></div>
+                <span class="feat-tag">Secure</span>
+            </div>
+            <div class="feat-title">Keamanan Data</div>
+            <div class="feat-desc">Data tersimpan aman dengan sistem autentikasi berlapis. Hanya pengguna terotorisasi yang dapat mengakses sistem.</div>
+        </div>
+        <div class="feat-card reveal" style="border-top: 3px solid #06b6d4; transition-delay:0.4s">
+            <div class="feat-icon-row">
+                <div class="feat-icon-box icon-cyan"><span class="material-icons">devices</span></div>
+                <span class="feat-tag">Responsive</span>
+            </div>
+            <div class="feat-title">Akses Multi-Device</div>
+            <div class="feat-desc">Gunakan dari komputer, tablet, maupun smartphone. Antarmuka responsif yang nyaman di semua ukuran layar.</div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===========================
+     HOW IT WORKS
+=========================== -->
+<section class="how-section">
+    <div class="section-header reveal">
+        <div class="section-badge badge-blue">
+            <span class="material-icons">map</span>
+            Cara Kerja
+        </div>
+        <h2 class="section-title">Mudah Digunakan</h2>
+        <p class="section-subtitle">Tiga langkah sederhana untuk mulai mengelola arsip surat digital Anda.</p>
+    </div>
+
+    <div class="steps-grid">
+        <div class="step-card reveal">
+            <div class="step-icon-wrap" style="background: linear-gradient(135deg,#10b981,#059669);">
+                <span class="material-icons">login</span>
+                <span class="step-num">01</span>
+            </div>
+            <div class="step-title">Login ke Sistem</div>
+            <div class="step-desc">Masuk dengan akun yang telah disiapkan oleh administrator. Aman dan terenkripsi.</div>
+        </div>
+        <div class="step-card reveal" style="transition-delay:0.15s">
+            <div class="step-icon-wrap" style="background: linear-gradient(135deg,#3b82f6,#4f46e5);">
+                <span class="material-icons">edit_note</span>
+                <span class="step-num">02</span>
+            </div>
+            <div class="step-title">Input Data Surat</div>
+            <div class="step-desc">Isi formulir surat masuk atau keluar dengan lengkap. Upload lampiran bila diperlukan.</div>
+        </div>
+        <div class="step-card reveal" style="transition-delay:0.3s">
+            <div class="step-icon-wrap" style="background: linear-gradient(135deg,#8b5cf6,#7c3aed);">
+                <span class="material-icons">task_alt</span>
+                <span class="step-num">03</span>
+            </div>
+            <div class="step-title">Arsip Tersimpan</div>
+            <div class="step-desc">Surat tersimpan otomatis dan dapat dicari kapan saja. Generate laporan sesuai kebutuhan.</div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===========================
+     CTA DARK
+=========================== -->
+<section id="tentang" class="cta-section">
+    <div class="cta-orb-1"></div>
+    <div class="cta-orb-2"></div>
+
+    <div class="cta-brand reveal">
+        <div class="cta-logo">
+            <img src="{{ asset('logokemenag.png') }}" alt="Logo">
+        </div>
+        <div style="text-align:left;">
+            <p style="color:#fff;font-weight:700;font-size:17px;">Kementerian Agama</p>
+            <p style="color:rgba(52,211,153,0.6);font-size:13px;">Republik Indonesia</p>
+        </div>
+    </div>
+
+    <h2 class="cta-title reveal">
+        Siap Transformasi<br>
+        <span class="text-gradient">Arsip Anda?</span>
+    </h2>
+
+    <p class="cta-sub reveal">
+        Bergabunglah dengan sistem arsip digital Kemenag. Mulai perjalanan menuju administrasi yang lebih efisien dan terdigitalisasi sepenuhnya.
+    </p>
+
+    <div class="reveal">
+        <a href="{{ route('login') }}" class="btn-hero-primary">
+            <span class="material-icons" style="font-size:22px!important">rocket_launch</span>
+            Akses Sistem Sekarang
+        </a>
+    </div>
+
+    <div class="trust-row reveal">
+        <div class="trust-item">
+            <span class="material-icons">verified</span>
+            Sistem Terverifikasi
+        </div>
+        <div class="trust-dot"></div>
+        <div class="trust-item">
+            <span class="material-icons">lock</span>
+            Data Terenkripsi
+        </div>
+        <div class="trust-dot"></div>
+        <div class="trust-item">
+            <span class="material-icons">support_agent</span>
+            Dukungan Teknis
+        </div>
+    </div>
+</section>
+
+
+<!-- ===========================
+     FOOTER
+=========================== -->
+<footer class="footer">
+    <div class="footer-main">
+        <!-- Brand col -->
+        <div>
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="{{ asset('logokemenag.png') }}" alt="Logo">
+                </div>
+                <div class="footer-brand-name">
+                    <p>Arsip Surat Kemenag</p>
+                    <p>Sistem Pengarsipan Digital</p>
+                </div>
+            </div>
+            <p class="footer-desc">Sistem manajemen arsip surat digital untuk mendukung tata kelola administrasi yang efisien di lingkungan Kementerian Agama RI.</p>
+        </div>
+
+        <!-- Nav col -->
+        <div>
+            <div class="footer-heading">Navigasi</div>
+            <ul class="footer-links">
+                <li><a href="{{ route('dashboard') }}"><span class="material-icons">chevron_right</span>Dashboard</a></li>
+                <li><a href="{{ route('suratmasuk.index') }}"><span class="material-icons">chevron_right</span>Surat Masuk</a></li>
+                <li><a href="{{ route('suratkeluar.index') }}"><span class="material-icons">chevron_right</span>Surat Keluar</a></li>
+                <li><a href="{{ route('laporan.index') }}"><span class="material-icons">chevron_right</span>Laporan</a></li>
+                <li><a href="{{ route('login') }}"><span class="material-icons">chevron_right</span>Masuk ke Sistem</a></li>
+            </ul>
+        </div>
+
+        <!-- Info col -->
+        <div>
+            <div class="footer-heading">Informasi</div>
+            <div class="footer-info-item">
+                <span class="material-icons">location_on</span>
+                <span>Kementerian Agama Republik Indonesia</span>
+            </div>
+            <div class="footer-info-item">
+                <span class="material-icons">language</span>
+                <span>kemenag.go.id</span>
+            </div>
+            <div class="footer-info-item">
+                <span class="material-icons">verified_user</span>
+                <span>Sistem Terverifikasi Resmi</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding: 20px 48px; max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <p class="footer-copy">© {{ date('Y') }} Kementerian Agama Republik Indonesia. Hak Cipta Dilindungi.</p>
+        <div class="footer-made">
+            <span class="material-icons">favorite</span>
+            Dibuat untuk kemudahan administrasi digital
+        </div>
+    </div>
+</footer>
+
+
+<script>
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => observer.observe(el));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    // ===== Mobile nav drawer =====
+    function toggleNavDrawer() {
+        const drawer = document.getElementById('nav-drawer');
+        const icon = document.getElementById('nav-toggle-icon');
+        const isOpen = drawer.classList.contains('open');
+        if (isOpen) {
+            drawer.classList.remove('open');
+            icon.textContent = 'menu';
+        } else {
+            drawer.classList.add('open');
+            icon.textContent = 'close';
+        }
+    }
+
+    function closeNavDrawer() {
+        const drawer = document.getElementById('nav-drawer');
+        const icon = document.getElementById('nav-toggle-icon');
+        drawer.classList.remove('open');
+        icon.textContent = 'menu';
+    }
+
+    // Close drawer when clicking outside
+    document.addEventListener('click', function(e) {
+        const drawer = document.getElementById('nav-drawer');
+        const toggle = document.getElementById('nav-toggle');
+        if (drawer && toggle && !drawer.contains(e.target) && !toggle.contains(e.target)) {
+            closeNavDrawer();
+        }
+    });
+
+    // Close drawer on scroll
+    window.addEventListener('scroll', function() {
+        closeNavDrawer();
+    }, { passive: true });
+</script>
+</body>
+</html>

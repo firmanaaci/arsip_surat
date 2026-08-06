@@ -2,92 +2,184 @@
 
 @section('content')
 
+{{-- Toast Notification --}}
 @if (session('success'))
-    <div id="success-notification" class="mb-4 p-4 rounded bg-green-100 text-green-800 border border-green-300">
-        {{ session('success') }}
-    </div>
-    <script>
-        setTimeout(() => {
-            const notification = document.getElementById('success-notification');
-            if (notification) notification.style.display = 'none';
-        }, 3000);
-    </script>
+<div id="toast-success"
+    style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(16,185,129,0.4);font-size:14px;font-weight:600;animation:slideInRight 0.4s ease forwards;">
+    <span class="material-icons" style="font-size:20px!important;">check_circle</span>
+    {{ session('success') }}
+</div>
+<style>
+    @keyframes slideInRight { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes slideOutRight { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(60px); } }
+</style>
+<script>
+    setTimeout(() => {
+        const t = document.getElementById('toast-success');
+        if (t) { t.style.animation = 'slideOutRight 0.4s ease forwards'; setTimeout(() => t.remove(), 400); }
+    }, 3500);
+</script>
 @endif
 
-<div class="bg-white shadow-md rounded p-6 w-full">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold">Daftar Surat Keluar</h2>
-        <form id="searchForm" method="GET" class="flex">
-            <input type="text" name="search" id="searchInput" value="{{ request('search') }}" placeholder="Cari surat..." class="border border-gray-300 rounded-l px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" {{ request('search') ? 'autofocus' : '' }}>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700">Cari</button>
+{{-- Page Header --}}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <div class="flex items-center gap-2 mb-1">
+            <a href="{{ route('halamanutama') }}" class="text-slate-400 hover:text-slate-600 text-sm flex items-center gap-1 transition-colors">
+                <span class="material-icons" style="font-size:16px!important;">home</span>
+                Dashboard
+            </a>
+            <span class="text-slate-300 text-sm">/</span>
+            <span class="text-slate-600 text-sm font-medium">Surat Keluar</span>
+        </div>
+        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                <span class="material-icons text-white" style="font-size:18px!important;">outbox</span>
+            </div>
+            Daftar Surat Keluar
+        </h1>
+    </div>
+
+    <div class="flex items-center gap-3 flex-wrap">
+        {{-- Search --}}
+        <form id="searchForm" method="GET" class="relative">
+            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:18px!important;">search</span>
+            <input
+                type="text"
+                name="search"
+                id="searchInput"
+                value="{{ request('search') }}"
+                placeholder="Cari surat..."
+                class="pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400 transition-all w-64"
+                {{ request('search') ? 'autofocus' : '' }}
+            >
         </form>
-        <script>
-            const input = document.getElementById('searchInput');
-            const form = document.getElementById('searchForm');
-            let timeout = null;
-
-            input.addEventListener('input', function () {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => { form.submit(); }, 700);
-            });
-        </script>
+        <a href="{{ route('inputsuratkeluar') }}"
+            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white rounded-xl shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            style="background:linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 4px 14px rgba(245,158,11,0.35);">
+            <span class="material-icons" style="font-size:16px!important;">add</span>
+            Input Surat Baru
+        </a>
     </div>
+</div>
 
-    <div class="mb-4">
-        <a href="{{ route('halamanutama') }}" class="text-blue-600 hover:underline text-sm">← Kembali ke Halaman Utama</a>
-    </div>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    let searchTimeout = null;
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => searchForm.submit(), 600);
+        });
+    }
+</script>
 
+{{-- Table Card --}}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">No</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Nomor Surat</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Tanggal</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Sifat Surat</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Lampiran</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Hal</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Tujuan Surat</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Aksi</th>
+        <table class="w-full text-sm">
+            <thead>
+                <tr style="background:linear-gradient(135deg,#1a1200,#3d2a00);">
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider w-10">No</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Nomor Surat</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Tanggal</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Sifat</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Lampiran</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Hal</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Tujuan</th>
+                    <th class="px-5 py-4 text-center text-xs font-semibold text-white/70 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-slate-100">
                 @forelse ($suratKeluar as $index => $surat)
-                <tr>
-                    <td class="px-4 py-2 text-sm text-gray-700">{{ $suratKeluar->firstItem() + $index }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-700">{{ $surat->nomor_surat }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-700">{{ $surat->tanggal_surat }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-700">{{ $surat->sifat_surat }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-700">{{ $surat->lampiran }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-700">{{ $surat->hal }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-700">{{ $surat->tujuan_surat }}</td>
-                    <td class="px-4 py-2 text-sm">
-                        <div class="flex space-x-2">
+                <tr class="hover:bg-slate-50/70 transition-colors duration-150 group">
+                    <td class="px-5 py-3.5 text-slate-400 font-medium text-xs">
+                        {{ $suratKeluar->firstItem() + $index }}
+                    </td>
+                    <td class="px-5 py-3.5">
+                        <span class="font-semibold text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg border border-amber-100">
+                            {{ $surat->nomor_surat }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-3.5 text-slate-600 text-xs whitespace-nowrap">
+                        <div class="flex items-center gap-1.5">
+                            <span class="material-icons text-slate-300" style="font-size:14px!important;">calendar_today</span>
+                            {{ \Carbon\Carbon::parse($surat->tanggal_surat)->format('d M Y') }}
+                        </div>
+                    </td>
+                    <td class="px-5 py-3.5">
+                        @php
+                            $sifat = $surat->sifat_surat;
+                            $sifatColor = match($sifat) {
+                                'Rahasia','Sangat Rahasia' => 'bg-red-50 text-red-700 border-red-200',
+                                'Penting','Segera' => 'bg-orange-50 text-orange-700 border-orange-200',
+                                default => 'bg-slate-100 text-slate-600 border-slate-200',
+                            };
+                        @endphp
+                        <span class="text-xs font-medium px-2.5 py-1 rounded-lg border {{ $sifatColor }}">{{ $sifat }}</span>
+                    </td>
+                    <td class="px-5 py-3.5 text-slate-600 text-xs">{{ $surat->lampiran }}</td>
+                    <td class="px-5 py-3.5 text-slate-600 text-xs max-w-[180px] truncate" title="{{ $surat->hal }}">{{ $surat->hal }}</td>
+                    <td class="px-5 py-3.5 text-slate-600 text-xs max-w-[140px] truncate" title="{{ $surat->tujuan_surat }}">{{ $surat->tujuan_surat }}</td>
+                    <td class="px-5 py-3.5">
+                        <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('suratkeluar.show', $surat->id) }}"
-                            class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded shadow"
-                            title="Lihat Surat">🔍</a>
+                                class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all hover:scale-105"
+                                title="Lihat Detail">
+                                <span class="material-icons" style="font-size:15px!important;">visibility</span>
+                            </a>
                             <a href="{{ route('suratkeluar.edit', $surat->id) }}"
-                            class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded shadow"
-                            title="Edit Surat">✏️</a>
-                            <form action="{{ route('suratkeluar.destroy', $surat->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus surat ini?')" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded shadow" title="Hapus Surat">🗑️</button>
+                                class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-200 transition-all hover:scale-105"
+                                title="Edit">
+                                <span class="material-icons" style="font-size:15px!important;">edit</span>
+                            </a>
+                            <form action="{{ route('suratkeluar.destroy', $surat->id) }}" method="POST" class="inline-block"
+                                onsubmit="return confirm('Yakin hapus surat ini?')">
+                                @csrf @method('DELETE')
+                                <button type="submit"
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-all hover:scale-105"
+                                    title="Hapus">
+                                    <span class="material-icons" style="font-size:15px!important;">delete_outline</span>
+                                </button>
                             </form>
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="px-4 py-2 text-sm text-gray-500 text-center">Tidak ada data surat keluar.</td>
+                    <td colspan="8" class="px-5 py-16 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
+                                <span class="material-icons text-slate-300" style="font-size:32px!important;">outbox</span>
+                            </div>
+                            <p class="text-slate-500 font-medium">Belum ada data surat keluar</p>
+                            <p class="text-slate-400 text-xs">
+                                @if(request('search')) Tidak ada hasil untuk "{{ request('search') }}"
+                                @else Klik tombol "Input Surat Baru" untuk menambahkan data
+                                @endif
+                            </p>
+                        </div>
+                    </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    <div class="mt-4">
+    {{-- Pagination --}}
+    @if($suratKeluar->hasPages())
+    <div class="px-5 py-4 border-t border-slate-100 flex items-center justify-between">
+        <p class="text-xs text-slate-500">
+            Menampilkan {{ $suratKeluar->firstItem() }}–{{ $suratKeluar->lastItem() }} dari {{ $suratKeluar->total() }} data
+        </p>
         {{ $suratKeluar->withQueryString()->links('pagination::tailwind') }}
     </div>
+    @else
+    <div class="px-5 py-3 border-t border-slate-100">
+        <p class="text-xs text-slate-400">Total {{ $suratKeluar->total() }} data</p>
+    </div>
+    @endif
 </div>
+
 @endsection

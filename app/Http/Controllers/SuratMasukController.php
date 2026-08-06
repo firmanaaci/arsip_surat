@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class SuratMasukController extends Controller
 {
@@ -16,7 +17,7 @@ class SuratMasukController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nomor_surat' => 'required|string',
+            'nomor_surat' => ['required', 'string', 'max:255', Rule::unique('surat_masuks', 'nomor_surat')],
             'tanggal_surat' => 'required|date',
             'pengirim' => 'required|string',
             'perihal' => 'required|string',
@@ -79,15 +80,18 @@ class SuratMasukController extends Controller
         $surat = SuratMasuk::findOrFail($id);
 
         $request->validate([
-            'nomor_surat' => 'required',
+            'nomor_surat' => ['required', 'string', 'max:255', Rule::unique('surat_masuks', 'nomor_surat')->ignore($surat->id)],
             'tanggal_surat' => 'required|date',
-            'pengirim' => 'required',
-            'perihal' => 'required',
-            'kategori' => 'required',
-            'status_surat' => 'required',
-            'sifat_surat' => 'required',
-            'tujuan_surat' => 'required',
-            'petunjuk' => 'required',
+            'pengirim' => 'required|string',
+            'perihal' => 'required|string',
+            'kategori' => 'required|string',
+            'status_surat' => 'required|string',
+            'sifat_surat' => 'required|string',
+            'tujuan_surat' => 'required|string',
+            'petunjuk' => 'required|string',
+            'catatan' => 'nullable|string',
+            'isi_disposisi' => 'nullable|string',
+            'disposisi_kasubbag' => 'nullable|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:5120',
         ]);
 

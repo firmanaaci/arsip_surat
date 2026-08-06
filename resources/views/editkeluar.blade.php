@@ -1,83 +1,209 @@
 @extends('components.layouts.app')
 
 @section('content')
-<div class="bg-white shadow-md rounded p-6 w-full">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold">Edit Surat Keluar</h2>
-        <a href="{{ route('suratkeluar.index') }}" class="text-blue-600 hover:underline text-sm">← Kembali</a>
+
+{{-- Toast Notification --}}
+@if (session('success'))
+<div id="toast-success"
+    style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(16,185,129,0.4);font-size:14px;font-weight:600;animation:slideInRight 0.4s ease forwards;">
+    <span class="material-icons" style="font-size:20px!important;">check_circle</span>
+    {{ session('success') }}
+</div>
+<style>
+    @keyframes slideInRight { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(60px)} }
+</style>
+<script>
+    setTimeout(()=>{const t=document.getElementById('toast-success');if(t){t.style.animation='slideOutRight 0.4s ease forwards';setTimeout(()=>t.remove(),400);}},3500);
+</script>
+@endif
+
+{{-- Page Header --}}
+<div class="mb-6">
+    <div class="flex items-center gap-2 mb-2">
+        <a href="{{ route('halamanutama') }}" class="text-slate-400 hover:text-slate-600 text-sm flex items-center gap-1 transition-colors">
+            <span class="material-icons" style="font-size:16px!important;">home</span>Dashboard
+        </a>
+        <span class="text-slate-300">/</span>
+        <a href="{{ route('suratkeluar.index') }}" class="text-slate-400 hover:text-slate-600 text-sm transition-colors">Surat Keluar</a>
+        <span class="text-slate-300">/</span>
+        <span class="text-slate-600 text-sm font-medium">Edit Surat</span>
+    </div>
+    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+            <span class="material-icons text-white" style="font-size:18px!important;">edit</span>
+        </div>
+        Edit Surat Keluar
+    </h1>
+</div>
+
+{{-- Validation Errors --}}
+@if($errors->any())
+<div class="mb-5 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+    <span class="material-icons text-red-400 flex-shrink-0 mt-0.5" style="font-size:18px!important;">error_outline</span>
+    <div>
+        <p class="font-semibold mb-1">Terjadi kesalahan:</p>
+        <ul class="space-y-0.5 list-disc pl-4">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+    </div>
+</div>
+@endif
+
+{{-- Form Card --}}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+    {{-- Card Header --}}
+    <div class="px-6 sm:px-7 py-5 border-b border-slate-100 flex items-center justify-between" style="background:linear-gradient(135deg,#fffbeb,#fff7ed);">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                <span class="material-icons text-white" style="font-size:20px!important;">edit_note</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-slate-800">Edit Data Surat Keluar</h2>
+                <p class="text-xs text-slate-500">Nomor: <span class="font-semibold text-slate-700">{{ $surat->nomor_surat }}</span></p>
+            </div>
+        </div>
+        <a href="{{ route('suratkeluar.index') }}"
+            class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors px-3 py-2 rounded-xl hover:bg-slate-100">
+            <span class="material-icons" style="font-size:16px!important;">arrow_back</span>
+            Kembali
+        </a>
     </div>
 
-    {{-- Pesan sukses --}}
-    @if(session('success'))
-        <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <form method="POST" action="{{ route('suratkeluar.update', $surat->id) }}" enctype="multipart/form-data">
+    {{-- Form Body --}}
+    <form method="POST" action="{{ route('suratkeluar.update', $surat->id) }}" enctype="multipart/form-data" class="p-5 sm:p-7">
         @csrf
         @method('PUT')
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Kolom Kiri --}}
-            <div>
-                <div class="mb-4">
-                    <label for="nomor_surat" class="block text-sm font-medium text-gray-700">Nomor Surat</label>
-                    <input type="text" name="nomor_surat" id="nomor_surat" value="{{ $surat->nomor_surat }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+        {{-- Section 1: Informasi Surat --}}
+        <div class="mb-8">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-5 flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center font-bold" style="background:#f59e0b;">1</span>
+                Informasi Surat
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                {{-- Nomor Surat --}}
+                <div>
+                    <label for="nomor_surat" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                        Nomor Surat <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="nomor_surat" id="nomor_surat" value="{{ old('nomor_surat', $surat->nomor_surat) }}" required
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 bg-white">
                 </div>
 
-                <div class="mb-4">
-                    <label for="tanggal_surat" class="block text-sm font-medium text-gray-700">Tanggal Surat</label>
-                    <input type="date" name="tanggal_surat" id="tanggal_surat" value="{{ $surat->tanggal_surat }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                {{-- Tanggal Surat --}}
+                <div>
+                    <label for="tanggal_surat" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                        Tanggal Surat <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="tanggal_surat" id="tanggal_surat" value="{{ old('tanggal_surat', $surat->tanggal_surat) }}" required
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 bg-white">
                 </div>
 
-                <div class="mb-4">
-                    <label for="sifat_surat" class="block text-sm font-medium text-gray-700">Sifat Surat</label>
-                    <select name="sifat_surat" id="sifat_surat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
-                        @foreach(['Penting', 'Segera', 'Biasa'] as $sifat)
-                            <option value="{{ $sifat }}" {{ $surat->sifat_surat == $sifat ? 'selected' : '' }}>{{ $sifat }}</option>
+                {{-- Sifat Surat --}}
+                <div>
+                    <label for="sifat_surat" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                        Sifat Surat <span class="text-red-500">*</span>
+                    </label>
+                    <select name="sifat_surat" id="sifat_surat" required
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 bg-white">
+                        @foreach(['Penting', 'Segera', 'Rahasia', 'Sangat Rahasia', 'Biasa'] as $sifat)
+                            <option value="{{ $sifat }}" {{ old('sifat_surat', $surat->sifat_surat) == $sifat ? 'selected' : '' }}>{{ $sifat }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="mb-4">
-                    <label for="lampiran" class="block text-sm font-medium text-gray-700">Lampiran</label>
-                    <input type="text" name="lampiran" id="lampiran" value="{{ $surat->lampiran }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                {{-- Lampiran --}}
+                <div>
+                    <label for="lampiran" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                        Lampiran <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="lampiran" id="lampiran" value="{{ old('lampiran', $surat->lampiran) }}" required
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 bg-white">
                 </div>
+
+                {{-- Hal --}}
+                <div class="md:col-span-2">
+                    <label for="hal" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                        Hal <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="hal" id="hal" value="{{ old('hal', $surat->hal) }}" required
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 bg-white">
+                </div>
+
+                {{-- Tujuan Surat --}}
+                <div class="md:col-span-2">
+                    <label for="tujuan_surat" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                        Tujuan Surat <span class="text-red-500">*</span>
+                    </label>
+                    @php $tujuanList = ['Kepala kantor', 'Kasubbag TU', 'PHU', 'Bimas Islam', 'Pend. Agama & Keagamaaan Islam', 'Pend. Madrasah', 'Penyelenggara Zakat dan Wakaf', 'Penyelenggara Kristen', 'Penyelenggara Katolik', 'Perencana', 'Keuangan', 'Kepegawaian', 'Barang Milik Negara', 'Humas', 'Umum']; @endphp
+                    <select name="tujuan_surat" id="tujuan_surat" required
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 bg-white">
+                        @foreach($tujuanList as $t)
+                            <option value="{{ $t }}" {{ old('tujuan_surat', $surat->tujuan_surat) == $t ? 'selected' : '' }}>{{ $t }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
             </div>
+        </div>
 
-            {{-- Kolom Kanan --}}
+        {{-- Divider --}}
+        <div class="border-t border-slate-100 mb-8"></div>
+
+        {{-- Section 2: File --}}
+        <div class="mb-8">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-5 flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center font-bold" style="background:#8b5cf6;">2</span>
+                File Surat
+            </h3>
             <div>
-                <div class="mb-4">
-                    <label for="hal" class="block text-sm font-medium text-gray-700">Hal</label>
-                    <input type="text" name="hal" id="hal" value="{{ $surat->hal }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
-                </div>
-
-                <div class="mb-4">
-                    <label for="tujuan_surat" class="block text-sm font-medium text-gray-700">Tujuan Surat</label>
-                    <select name="tujuan_surat" id="tujuan_surat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
-                        @php
-                            $tujuanList = ['Kepala kantor', 'Kasubbag TU', 'PHU', 'Bimas Islam', 'Pend. Agama & Keagamaaan Islam', 'Pend. Madrasah', 'Penyelenggara Zakat dan Wakaf', 'Penyelenggara Kristen', 'Penyelenggara Katolik', 'Perencana', 'Keuangan', 'Kepegawaian', 'Barang Milik Negara', 'Humas', 'Umum'];
-                        @endphp
-                        @foreach($tujuanList as $tujuan)
-                            <option value="{{ $tujuan }}" {{ $surat->tujuan_surat == $tujuan ? 'selected' : '' }}>{{ $tujuan }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="file" class="block text-sm font-medium text-gray-700">Ganti File Surat (opsional)</label>
-                    <input type="file" name="file" id="file" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                    <p class="text-xs text-gray-500 mt-1">* Kosongkan jika tidak ingin mengganti file</p>
+                <label for="file" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                    Ganti File Surat (Opsional)
+                </label>
+                <div class="relative border-2 border-dashed border-slate-200 rounded-xl p-5 hover:border-amber-400 hover:bg-amber-50/20 transition-all cursor-pointer">
+                    <input type="file" name="file" id="file"
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        onchange="updateFileName(this)">
+                    <div class="flex items-center gap-4 pointer-events-none">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                            <span class="material-icons text-amber-400" style="font-size:24px!important;">cloud_upload</span>
+                        </div>
+                        <div>
+                            <p id="file-name-display" class="text-sm font-medium text-slate-600 truncate">
+                                {{ $surat->file_path ? 'File saat ini: ' . basename($surat->file_path) : 'Klik untuk ganti file scan surat' }}
+                            </p>
+                            <p class="text-xs text-slate-400 mt-0.5">Format: PDF, JPG, PNG, DOCX · Ukuran maksimal 2MB</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        {{-- Tombol --}}
-        <div class="mt-6 flex space-x-2">
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
-            <a href="{{ route('suratkeluar.index') }}" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</a>
+        {{-- Form Actions --}}
+        <div class="flex items-center justify-end gap-3 pt-5 border-t border-slate-100">
+            <a href="{{ route('suratkeluar.index') }}"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
+                Batal
+            </a>
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                style="background:linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 4px 14px rgba(245,158,11,0.4);">
+                <span class="material-icons" style="font-size:16px!important;">save</span>
+                Update Surat Keluar
+            </button>
         </div>
     </form>
 </div>
+
+<script>
+function updateFileName(input) {
+    const display = document.getElementById('file-name-display');
+    if (display && input.files && input.files[0]) {
+        display.textContent = 'File baru: ' + input.files[0].name;
+        display.style.color = '#d97706';
+    }
+}
+</script>
+
 @endsection
