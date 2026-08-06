@@ -8,6 +8,7 @@ use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\ProfileController;
 
 // Surat Masuk
 Route::get('/surat-masuk/create', [SuratMasukController::class, 'create'])->name('suratmasuk.create');
@@ -118,5 +119,19 @@ Route::get('/laporan', function () {
     return view('laporan');
 })->name('laporan.index');
 
+
+// Settings routes (Volt/Livewire)
+Route::middleware('auth')->group(function () {
+    Route::redirect('settings', 'settings/profile');
+
+    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
+    Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+
+    // Profile routes (untuk ProfileTest)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 require __DIR__.'/auth.php';

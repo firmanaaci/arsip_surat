@@ -14,12 +14,12 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-   public function edit(Request $request): View
-{
-    return view('settings.profile', [ // ganti dari 'profile.edit'
-        'user' => $request->user(),
-    ]);
-}
+    public function edit(Request $request): View
+    {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
 
 /**
  * Update the user's profile information.
@@ -34,8 +34,8 @@ public function update(ProfileUpdateRequest $request): RedirectResponse
 
     $request->user()->save();
 
-    return Redirect::route('settings.profile')->with('status', 'profile-updated');
-}
+        return Redirect::to('/profile')->with('status', 'profile-updated');
+    }
 
 
     /**
