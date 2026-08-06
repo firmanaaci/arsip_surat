@@ -17,7 +17,7 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('halamanutama', absolute: false));
+    $response->assertRedirect('/halamanutama');
 });
 
 test('users can not authenticate with invalid password', function () {
