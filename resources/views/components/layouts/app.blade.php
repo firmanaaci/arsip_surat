@@ -170,6 +170,13 @@
                 });
             });
         });
+
+        // Prevent Back Button History Cache After Logout (Force Reload & Re-Auth)
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted || (window.performance && window.performance.getEntriesByType && window.performance.getEntriesByType("navigation")[0]?.type === "back_forward")) {
+                window.location.reload();
+            }
+        });
     </script>
 
 </body>
