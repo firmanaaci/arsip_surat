@@ -2,24 +2,7 @@
 
 @section('content')
 
-{{-- Toast Notification --}}
-@if (session('success'))
-<div id="toast-success"
-    style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(16,185,129,0.4);font-size:14px;font-weight:600;animation:slideInRight 0.4s ease forwards;">
-    <span class="material-icons" style="font-size:20px!important;">check_circle</span>
-    {{ session('success') }}
-</div>
-<style>
-    @keyframes slideInRight { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes slideOutRight { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(60px); } }
-</style>
-<script>
-    setTimeout(() => {
-        const t = document.getElementById('toast-success');
-        if (t) { t.style.animation = 'slideOutRight 0.4s ease forwards'; setTimeout(() => t.remove(), 400); }
-    }, 3500);
-</script>
-@endif
+
 
 {{-- Page Header --}}
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -97,8 +80,8 @@
                     <td class="px-5 py-3.5 text-slate-400 font-medium text-xs">
                         {{ $suratKeluar->firstItem() + $index }}
                     </td>
-                    <td class="px-5 py-3.5">
-                        <span class="font-semibold text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg border border-amber-100">
+                    <td class="px-5 py-3.5 whitespace-nowrap">
+                        <span class="font-semibold text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg border border-amber-100 whitespace-nowrap inline-block">
                             {{ $surat->nomor_surat }}
                         </span>
                     </td>
@@ -108,7 +91,7 @@
                             {{ \Carbon\Carbon::parse($surat->tanggal_surat)->format('d M Y') }}
                         </div>
                     </td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5 whitespace-nowrap">
                         @php
                             $sifat = $surat->sifat_surat;
                             $sifatColor = match($sifat) {
@@ -117,12 +100,12 @@
                                 default => 'bg-slate-100 text-slate-600 border-slate-200',
                             };
                         @endphp
-                        <span class="text-xs font-medium px-2.5 py-1 rounded-lg border {{ $sifatColor }}">{{ $sifat }}</span>
+                        <span class="text-xs font-medium px-2.5 py-1 rounded-lg border whitespace-nowrap inline-block {{ $sifatColor }}">{{ $sifat }}</span>
                     </td>
-                    <td class="px-5 py-3.5 text-slate-600 text-xs">{{ $surat->lampiran }}</td>
+                    <td class="px-5 py-3.5 text-slate-600 text-xs whitespace-nowrap">{{ $surat->lampiran }}</td>
                     <td class="px-5 py-3.5 text-slate-600 text-xs max-w-[180px] truncate" title="{{ $surat->hal }}">{{ $surat->hal }}</td>
                     <td class="px-5 py-3.5 text-slate-600 text-xs max-w-[140px] truncate" title="{{ $surat->tujuan_surat }}">{{ $surat->tujuan_surat }}</td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5 whitespace-nowrap">
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('suratkeluar.show', $surat->id) }}"
                                 class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all hover:scale-105"
@@ -135,7 +118,7 @@
                                 <span class="material-icons" style="font-size:15px!important;">edit</span>
                             </a>
                             <form action="{{ route('suratkeluar.destroy', $surat->id) }}" method="POST" class="inline-block"
-                                onsubmit="return confirm('Yakin hapus surat ini?')">
+                                data-confirm-delete="Yakin ingin menghapus surat keluar '{{ $surat->nomor_surat }}'?">
                                 @csrf @method('DELETE')
                                 <button type="submit"
                                     class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-all hover:scale-105"

@@ -58,4 +58,61 @@ class User extends Authenticatable
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
+
+    /**
+     * Check if user has admin role
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user has pimpinan role
+     */
+    public function isPimpinan(): bool
+    {
+        return $this->role === 'pimpinan';
+    }
+
+    /**
+     * Check if user has staf role
+     */
+    public function isStaf(): bool
+    {
+        return $this->role === 'staf';
+    }
+
+    /**
+     * Check if user matches any of the given roles
+     */
+    public function hasRole(string|array $roles): bool
+    {
+        if (is_string($roles)) {
+            $roles = array_map('trim', explode(',', $roles));
+        }
+
+        return in_array($this->role, $roles, true);
+    }
+
+    /**
+     * Human readable role label
+     */
+    public function getRoleLabelAttribute(): string
+    {
+        return match($this->role) {
+            'admin'    => 'Arsiparis / Administrator',
+            'pimpinan' => 'Kepala Kantor / Pimpinan',
+            'staf'     => 'Kepala Seksi / Staf Pengolah',
+            default    => 'Pengguna',
+        };
+    }
+
+    /**
+     * Activity logs relation
+     */
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
+use App\Helpers\ActivityLogger;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -17,58 +18,57 @@ class SuratMasukController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nomor_surat' => ['required', 'string', 'max:255', Rule::unique('surat_masuks', 'nomor_surat')],
-            'tanggal_surat' => 'required|date',
-            'pengirim' => 'required|string',
-            'perihal' => 'required|string',
-            'kategori' => 'required|string',
-            'status_surat' => 'required|string',
-            'sifat_surat' => 'required|string',
-            'tujuan_surat' => 'required|string',
-            'petunjuk' => 'required|string',
-            'catatan' => 'nullable|string',
-            'isi_disposisi' => 'nullable|string',
+            'nomor_surat'        => ['required', 'string', 'max:255', Rule::unique('surat_masuks', 'nomor_surat')],
+            'tanggal_surat'      => 'required|date',
+            'pengirim'           => 'required|string',
+            'perihal'            => 'required|string',
+            'kategori'           => 'required|string',
+            'status_surat'       => 'required|string',
+            'sifat_surat'        => 'required|string',
+            'tujuan_surat'       => 'required|string',
+            'petunjuk'           => 'required|string',
+            'catatan'            => 'nullable|string',
+            'isi_disposisi'      => 'nullable|string',
             'disposisi_kasubbag' => 'nullable|string',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:5120', // max 5MB
+            'file'               => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:5120', // max 5MB
         ]);
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $originalName = $file->getClientOriginalName();
+            $originalName = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('surat_masuk', $originalName, 'public');
             $validated['file'] = $path;
         }
 
-        SuratMasuk::create($validated);
+        $surat = SuratMasuk::create($validated);
 
-        return redirect()->back()->with('success', 'Surat berhasil disimpan.');
+        ActivityLogger::log('CREATE', "Mencatat surat masuk baru: {$surat->nomor_surat} (Asal: {$surat->pengirim})", $surat);
+
+        return redirect()->route('suratmasuk.index')->with('success', 'Surat masuk berhasil disimpan.');
     }
 
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
 
-        public function index(Request $request)
-        {
-            $search = $request->query('search');
+        $suratMasuk = SuratMasuk::when($search, function ($query, $search) {
+            return $query->where('nomor_surat', 'like', "%{$search}%")
+                        ->orWhere('pengirim', 'like', "%{$search}%")
+                        ->orWhere('perihal', 'like', "%{$search}%");
+        })
+        ->latest()
+        ->paginate(10)
+        ->appends(['search' => $search]);
 
-            $suratMasuk = SuratMasuk::when($search, function ($query, $search) {
-                return $query->where('nomor_surat', 'like', "%{$search}%")
-                            ->orWhere('pengirim', 'like', "%{$search}%")
-                            ->orWhere('perihal', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->paginate(10)
-            ->appends(['search' => $search]); // Tambahkan ini agar pagination mempertahankan query pencarian
-
-            return view('tablesuratmasuk', compact('suratMasuk'));
-        }
-
+        return view('tablesuratmasuk', compact('suratMasuk'));
+    }
 
     public function show($id)
     {
-        $surat = SuratMasuk::findOrFail($id);
+        $surat = SuratMasuk::with('disposisis')->findOrFail($id);
         return view('Dsuratmasuk', compact('surat'));
     }
-    
-    
+
     public function edit($id)
     {
         $surat = SuratMasuk::findOrFail($id);
@@ -80,51 +80,51 @@ class SuratMasukController extends Controller
         $surat = SuratMasuk::findOrFail($id);
 
         $request->validate([
-            'nomor_surat' => ['required', 'string', 'max:255', Rule::unique('surat_masuks', 'nomor_surat')->ignore($surat->id)],
-            'tanggal_surat' => 'required|date',
-            'pengirim' => 'required|string',
-            'perihal' => 'required|string',
-            'kategori' => 'required|string',
-            'status_surat' => 'required|string',
-            'sifat_surat' => 'required|string',
-            'tujuan_surat' => 'required|string',
-            'petunjuk' => 'required|string',
-            'catatan' => 'nullable|string',
-            'isi_disposisi' => 'nullable|string',
+            'nomor_surat'        => ['required', 'string', 'max:255', Rule::unique('surat_masuks', 'nomor_surat')->ignore($surat->id)],
+            'tanggal_surat'      => 'required|date',
+            'pengirim'           => 'required|string',
+            'perihal'            => 'required|string',
+            'kategori'           => 'required|string',
+            'status_surat'       => 'required|string',
+            'sifat_surat'        => 'required|string',
+            'tujuan_surat'       => 'required|string',
+            'petunjuk'           => 'required|string',
+            'catatan'            => 'nullable|string',
+            'isi_disposisi'      => 'nullable|string',
             'disposisi_kasubbag' => 'nullable|string',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:5120',
+            'file'               => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:5120',
         ]);
 
         $surat->fill($request->except('file'));
 
         if ($request->hasFile('file')) {
-            if ($surat->file && Storage::exists('public/surat/' . $surat->file)) {
-                Storage::delete('public/surat/' . $surat->file);
+            // Delete old file if exists
+            if ($surat->file && Storage::disk('public')->exists($surat->file)) {
+                Storage::disk('public')->delete($surat->file);
             }
 
             $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
-            $request->file('file')->storeAs('public/surat_masuk', $fileName);
-            $surat->file = $fileName;
+            $path = $request->file('file')->storeAs('surat_masuk', $fileName, 'public');
+            $surat->file = $path;
         }
 
         $surat->save();
 
-        return redirect()->route('suratmasuk.index')->with('success', 'Surat berhasil diperbarui!');
+        ActivityLogger::log('UPDATE', "Memperbarui data surat masuk: {$surat->nomor_surat}", $surat);
+
+        return redirect()->route('suratmasuk.index')->with('success', 'Surat masuk berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
         $surat = SuratMasuk::findOrFail($id);
+        $nomorSurat = $surat->nomor_surat;
 
-        // Hapus file jika ada
-        if ($surat->file && Storage::disk('public')->exists($surat->file)) {
-            Storage::disk('public')->delete($surat->file);
-        }
-
-        // Hapus data dari database
+        // Soft delete (data dipindahkan ke tempat sampah, file tetap aman sampai force delete)
         $surat->delete();
 
-        return redirect()->route('suratmasuk.index')->with('success', 'Surat berhasil dihapus.');
+        ActivityLogger::log('DELETE', "Memindahkan surat masuk '{$nomorSurat}' ke tempat sampah", $surat);
+
+        return redirect()->route('suratmasuk.index')->with('success', "Surat masuk '{$nomorSurat}' berhasil dipindahkan ke Tempat Sampah.");
     }
-        
 }

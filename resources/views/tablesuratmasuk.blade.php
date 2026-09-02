@@ -2,24 +2,7 @@
 
 @section('content')
 
-{{-- Toast Notification --}}
-@if (session('success'))
-<div id="toast-success"
-    style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(16,185,129,0.4);font-size:14px;font-weight:600;animation:slideInRight 0.4s ease forwards;">
-    <span class="material-icons" style="font-size:20px!important;">check_circle</span>
-    {{ session('success') }}
-</div>
-<style>
-    @keyframes slideInRight { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes slideOutRight { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(60px); } }
-</style>
-<script>
-    setTimeout(() => {
-        const t = document.getElementById('toast-success');
-        if (t) { t.style.animation = 'slideOutRight 0.4s ease forwards'; setTimeout(() => t.remove(), 400); }
-    }, 3500);
-</script>
-@endif
+
 
 {{-- Page Header --}}
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -72,38 +55,22 @@
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => searchForm.submit(), 600);
         });
-        window.addEventListener('DOMContentLoaded', () => {
-            if (searchInput.value.length > 0) {
-                searchInput.focus();
-                searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
-            }
-        });
     }
 </script>
 
-{{-- Validation Errors --}}
-@if($errors->any())
-<div class="mb-5 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-    <span class="material-icons text-red-500 flex-shrink-0" style="font-size:18px!important;">error_outline</span>
-    <ul class="space-y-1">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
-</div>
-@endif
-
 {{-- Table Card --}}
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-
-    {{-- Table --}}
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead>
-                <tr style="background:linear-gradient(135deg,#0f2044,#0d3d2e);">
+                <tr style="background:linear-gradient(135deg,#0a192f,#0f3025);">
                     <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider w-10">No</th>
                     <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Nomor Surat</th>
                     <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Tanggal</th>
                     <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Pengirim</th>
                     <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Perihal</th>
                     <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Tujuan</th>
-                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Petunjuk</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Status Alur</th>
                     <th class="px-5 py-4 text-center text-xs font-semibold text-white/70 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
@@ -113,8 +80,8 @@
                     <td class="px-5 py-3.5 text-slate-400 font-medium text-xs">
                         {{ $suratMasuk->firstItem() + $index }}
                     </td>
-                    <td class="px-5 py-3.5">
-                        <span class="font-semibold text-slate-700 text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg border border-blue-100">
+                    <td class="px-5 py-3.5 whitespace-nowrap">
+                        <span class="font-semibold text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg border border-blue-100 whitespace-nowrap inline-block">
                             {{ $surat->nomor_surat }}
                         </span>
                     </td>
@@ -133,26 +100,38 @@
                     <td class="px-5 py-3.5 text-slate-600 text-xs max-w-[140px] truncate" title="{{ $surat->tujuan_surat }}">
                         {{ $surat->tujuan_surat }}
                     </td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5 whitespace-nowrap">
                         @php
-                            $petunjuk = $surat->petunjuk;
-                            $color = match(true) {
-                                str_contains($petunjuk,'Tindak') => 'bg-amber-50 text-amber-700 border-amber-200',
-                                str_contains($petunjuk,'Simpan') => 'bg-slate-100 text-slate-600 border-slate-200',
-                                str_contains($petunjuk,'Hadir') => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                default => 'bg-violet-50 text-violet-700 border-violet-200',
+                            $st = $surat->status_surat;
+                            $stColor = match($st) {
+                                'Selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                'Sedang Diproses' => 'bg-cyan-50 text-cyan-700 border-cyan-200',
+                                'Didisposisikan' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                default => 'bg-blue-50 text-blue-700 border-blue-200',
+                            };
+                            $stIcon = match($st) {
+                                'Selesai' => 'check_circle',
+                                'Sedang Diproses' => 'pending',
+                                'Didisposisikan' => 'assignment_ind',
+                                default => 'mark_email_unread',
                             };
                         @endphp
-                        <span class="text-xs font-medium px-2.5 py-1 rounded-lg border {{ $color }}">
-                            {{ $petunjuk }}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg border whitespace-nowrap {{ $stColor }}">
+                            <span class="material-icons" style="font-size:13px!important;">{{ $stIcon }}</span>
+                            {{ $st }}
                         </span>
                     </td>
-                    <td class="px-5 py-3.5">
-                        <div class="flex items-center justify-center gap-2">
+                    <td class="px-5 py-3.5 whitespace-nowrap">
+                        <div class="flex items-center justify-center gap-1.5">
                             <a href="{{ route('suratmasuk.show', $surat->id) }}"
                                 class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all hover:scale-105"
-                                title="Lihat Detail">
+                                title="Lihat Detail & Disposisi">
                                 <span class="material-icons" style="font-size:15px!important;">visibility</span>
+                            </a>
+                            <a href="{{ route('disposisi.cetak', $surat->id) }}" target="_blank"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 transition-all hover:scale-105"
+                                title="Cetak Lembar Disposisi">
+                                <span class="material-icons" style="font-size:15px!important;">print</span>
                             </a>
                             <a href="{{ route('suratmasuk.edit', $surat->id) }}"
                                 class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-200 transition-all hover:scale-105"
@@ -160,7 +139,7 @@
                                 <span class="material-icons" style="font-size:15px!important;">edit</span>
                             </a>
                             <form action="{{ route('suratmasuk.destroy', $surat->id) }}" method="POST" class="inline-block"
-                                onsubmit="return confirm('Yakin hapus surat ini?')">
+                                data-confirm-delete="Yakin ingin menghapus surat masuk '{{ $surat->nomor_surat }}'?">
                                 @csrf @method('DELETE')
                                 <button type="submit"
                                     class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-all hover:scale-105"
@@ -198,9 +177,7 @@
         <p class="text-xs text-slate-500">
             Menampilkan {{ $suratMasuk->firstItem() }}–{{ $suratMasuk->lastItem() }} dari {{ $suratMasuk->total() }} data
         </p>
-        <div class="pagination-wrapper">
-            {{ $suratMasuk->withQueryString()->links('pagination::tailwind') }}
-        </div>
+        {{ $suratMasuk->withQueryString()->links('pagination::tailwind') }}
     </div>
     @else
     <div class="px-5 py-3 border-t border-slate-100">
@@ -210,3 +187,4 @@
 </div>
 
 @endsection
+

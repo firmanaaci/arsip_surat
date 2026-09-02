@@ -1,4 +1,4 @@
-<header class="relative z-30 flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10"
+<header class="relative z-40 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10"
     style="background: linear-gradient(90deg, #0f1f3d 0%, #1a3a5c 60%, #0d4a3a 100%); backdrop-filter: blur(16px); box-shadow: 0 2px 20px rgba(0,0,0,0.3);">
 
     <!-- Left: Sidebar Toggle + Breadcrumb -->
@@ -35,7 +35,10 @@
                         request()->routeIs('suratkeluar.show') => 'Detail Surat Keluar',
                         request()->routeIs('suratmasuk.edit') => 'Edit Surat Masuk',
                         request()->routeIs('suratkeluar.edit') => 'Edit Surat Keluar',
-                        request()->is('laporan') => 'Laporan',
+                        request()->routeIs('pengguna.index') => 'Manajemen Pengguna',
+                        request()->routeIs('audit.index') => 'Log Aktivitas (Audit Trail)',
+                        request()->routeIs('recyclebin.index') => 'Tempat Sampah',
+                        request()->is('laporan*') => 'Laporan & Ekspor',
                         default => ucfirst($last ?? 'Halaman')
                     };
                 @endphp
@@ -72,11 +75,11 @@
                 class="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-white/10 hover:border-white/25 hover:bg-white/5 transition-all group">
                 <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
                     style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    {{ strtoupper(substr(Auth::user()?->name ?? 'A', 0, 1)) }}
                 </div>
                 <div class="hidden md:block text-left">
-                    <p class="text-white text-xs font-semibold leading-tight truncate max-w-[100px]">{{ Auth::user()->name }}</p>
-                    <p class="text-emerald-300/70 text-[10px] leading-tight">{{ Auth::user()->role ?? 'Staff' }}</p>
+                    <p class="text-white text-xs font-semibold leading-tight truncate max-w-[120px]">{{ Auth::user()?->name ?? 'Admin' }}</p>
+                    <p class="text-emerald-300/70 text-[10px] leading-tight truncate max-w-[120px]">{{ Auth::user()?->role_label ?? 'Staff' }}</p>
                 </div>
                 <span class="material-icons text-white/40 text-[16px] group-hover:text-white/70 transition-transform duration-200"
                     :class="{ 'rotate-180': userMenuOpen }">expand_more</span>
@@ -97,12 +100,12 @@
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm"
                             style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            {{ strtoupper(substr(Auth::user()?->name ?? 'A', 0, 1)) }}
                         </div>
                         <div class="min-w-0">
-                            <p class="text-slate-800 text-sm font-semibold truncate">{{ Auth::user()->name }}</p>
+                            <p class="text-slate-800 text-sm font-semibold truncate">{{ Auth::user()?->name ?? 'Admin' }}</p>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold text-emerald-700 bg-emerald-100">
-                                {{ Auth::user()->role ?? 'Staff' }}
+                                {{ Auth::user()?->role_label ?? 'Staff' }}
                             </span>
                         </div>
                     </div>

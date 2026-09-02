@@ -24,8 +24,10 @@ return new class extends Migration
         $table->string('petunjuk');
         $table->string('catatan')->nullable();
         $table->text('isi_disposisi')->nullable();
-        $table->text('disposisi_kasubbag')->nullable();
+        $table->string('kode_klasifikasi')->nullable();
+        $table->string('kode_verifikasi')->nullable()->unique();
         $table->string('file')->nullable();
+        $table->softDeletes();
         $table->timestamps();
     });
 }

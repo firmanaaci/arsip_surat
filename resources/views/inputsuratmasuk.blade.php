@@ -2,21 +2,7 @@
 
 @section('content')
 
-{{-- Toast --}}
-@if (session('success'))
-<div id="toast-success"
-    style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(16,185,129,0.4);font-size:14px;font-weight:600;animation:slideInRight 0.4s ease forwards;">
-    <span class="material-icons" style="font-size:20px!important;">check_circle</span>
-    {{ session('success') }}
-</div>
-<style>
-    @keyframes slideInRight { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
-    @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(60px)} }
-</style>
-<script>
-    setTimeout(()=>{const t=document.getElementById('toast-success');if(t){t.style.animation='slideOutRight 0.4s ease forwards';setTimeout(()=>t.remove(),400);}},3500);
-</script>
-@endif
+
 
 {{-- Page Header --}}
 <div class="mb-6">

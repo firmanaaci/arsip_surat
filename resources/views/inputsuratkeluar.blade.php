@@ -2,21 +2,7 @@
 
 @section('content')
 
-{{-- Toast --}}
-@if (session('success'))
-<div id="toast-success"
-    style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(16,185,129,0.4);font-size:14px;font-weight:600;animation:slideInRight 0.4s ease forwards;">
-    <span class="material-icons" style="font-size:20px!important;">check_circle</span>
-    {{ session('success') }}
-</div>
-<style>
-    @keyframes slideInRight { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
-    @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(60px)} }
-</style>
-<script>
-    setTimeout(()=>{const t=document.getElementById('toast-success');if(t){t.style.animation='slideOutRight 0.4s ease forwards';setTimeout(()=>t.remove(),400);}},3500);
-</script>
-@endif
+
 
 {{-- Page Header --}}
 <div class="mb-6">
@@ -73,12 +59,77 @@
     <form method="POST" action="{{ route('suratkeluar.store') }}" enctype="multipart/form-data" class="p-7">
         @csrf
 
-        {{-- Section 1: Informasi Surat --}}
+        {{-- Section 1: Informasi Surat & Generator Nomor Otomatis --}}
         <div class="mb-8">
-            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-5 flex items-center gap-2">
-                <span class="w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center font-bold" style="background:#f59e0b;">1</span>
-                Informasi Surat
-            </h3>
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center font-bold" style="background:#f59e0b;">1</span>
+                    Informasi Surat & Penomoran Resmi
+                </h3>
+            </div>
+
+            {{-- Generator Nomor Otomatis Widget --}}
+            <div class="mb-6 p-5 rounded-2xl border border-amber-200/80 shadow-sm relative overflow-hidden"
+                style="background: linear-gradient(135deg, #fffdfa 0%, #fffbeb 100%);">
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <span class="material-icons" style="font-size:18px!important;">bolt</span>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">Generator Nomor Surat Otomatis Kemenag</h4>
+                            <p class="text-xs text-slate-500">Standar format Tata Naskah Dinas: <span class="font-mono text-amber-800 font-semibold">B-[No]/Kk.11.31/[Unit]/[Kode]/[Bulan]/[Tahun]</span></p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-[11px] font-bold uppercase tracking-wide">
+                        KMA Standar
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {{-- Unit Pengolah --}}
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Unit Pengolah</label>
+                        <select id="gen_unit" class="w-full px-3 py-2 text-xs border border-amber-200 rounded-xl bg-white focus:ring-2 focus:ring-amber-500/20 focus:outline-none">
+                            @foreach(\App\Helpers\KlasifikasiSuratHelper::getUnitPengolah() as $kode => $nama)
+                            <option value="{{ $kode }}">{{ $kode }} - {{ $nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Kode Klasifikasi --}}
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kode Klasifikasi Naskah</label>
+                        <select id="gen_klasifikasi" class="w-full px-3 py-2 text-xs border border-amber-200 rounded-xl bg-white focus:ring-2 focus:ring-amber-500/20 focus:outline-none">
+                            @foreach(\App\Helpers\KlasifikasiSuratHelper::getKlasifikasi() as $group => $items)
+                            <optgroup label="{{ $group }}">
+                                @foreach($items as $k => $label)
+                                <option value="{{ $k }}">{{ $label }}</option>
+                                @endforeach
+                            </optgroup>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Generate Action --}}
+                    <div class="flex items-end">
+                        <button type="button" onclick="generateNomorSurat()"
+                            class="w-full px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+                            <span class="material-icons" style="font-size:16px!important;">auto_fix_high</span>
+                            Generate & Isi Nomor
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Live Generated Preview --}}
+                <div id="gen_preview_box" class="mt-3.5 pt-3 border-t border-amber-200/60 flex items-center justify-between gap-2 text-xs">
+                    <span class="text-slate-500 text-[11px]">Pratinjau Nomor Terkini:</span>
+                    <span id="gen_preview_text" class="font-mono font-bold text-amber-900 bg-amber-100/80 px-3 py-1 rounded-lg border border-amber-200">
+                        Klik tombol untuk generate
+                    </span>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                 {{-- Nomor Surat --}}
@@ -87,17 +138,21 @@
                         Nomor Surat <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="nomor_surat" id="nomor_surat" value="{{ old('nomor_surat') }}" required
-                        class="w-full px-4 py-2.5 text-sm border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('nomor_surat') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror"
-                        placeholder="Contoh: B-001/KMG/2026">
+                        class="w-full px-4 py-2.5 text-sm border font-mono rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('nomor_surat') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror"
+                        placeholder="Contoh: B-001/Kk.11.31/1/KP.01.2/IX/2026">
                     @error('nomor_surat')<p class="mt-1.5 text-xs text-red-600 flex items-center gap-1"><span class="material-icons" style="font-size:13px!important;">error</span>{{ $message }}</p>@enderror
                 </div>
+
+                {{-- Kode Klasifikasi (Hidden or read-only auxiliary field) --}}
+                <input type="hidden" name="kode_klasifikasi" id="kode_klasifikasi" value="{{ old('kode_klasifikasi', 'KP.01.2') }}">
 
                 {{-- Tanggal Surat --}}
                 <div>
                     <label for="tanggal_surat" class="block text-sm font-semibold text-slate-700 mb-1.5">
                         Tanggal Surat <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" name="tanggal_surat" id="tanggal_surat" value="{{ old('tanggal_surat') }}" required
+                    <input type="date" name="tanggal_surat" id="tanggal_surat" value="{{ old('tanggal_surat', date('Y-m-d')) }}" required
+                        onchange="generateNomorSurat(false)"
                         class="w-full px-4 py-2.5 text-sm border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('tanggal_surat') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror">
                     @error('tanggal_surat')<p class="mt-1.5 text-xs text-red-600 flex items-center gap-1"><span class="material-icons" style="font-size:13px!important;">error</span>{{ $message }}</p>@enderror
                 </div>
@@ -110,8 +165,8 @@
                     <select name="sifat_surat" id="sifat_surat" required
                         class="w-full px-4 py-2.5 text-sm border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('sifat_surat') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror">
                         <option value="">-- Pilih Sifat --</option>
-                        @foreach(['Penting','Segera','Rahasia','Sangat Rahasia','Biasa'] as $sifat)
-                        <option value="{{ $sifat }}" {{ old('sifat_surat')==$sifat ? 'selected':'' }}>{{ $sifat }}</option>
+                        @foreach(['Biasa','Penting','Segera','Rahasia','Sangat Rahasia'] as $sifat)
+                        <option value="{{ $sifat }}" {{ old('sifat_surat', 'Biasa')==$sifat ? 'selected':'' }}>{{ $sifat }}</option>
                         @endforeach
                     </select>
                     @error('sifat_surat')<p class="mt-1.5 text-xs text-red-600 flex items-center gap-1"><span class="material-icons" style="font-size:13px!important;">error</span>{{ $message }}</p>@enderror
@@ -122,16 +177,16 @@
                     <label for="lampiran" class="block text-sm font-semibold text-slate-700 mb-1.5">
                         Lampiran <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="lampiran" id="lampiran" value="{{ old('lampiran') }}" required
+                    <input type="text" name="lampiran" id="lampiran" value="{{ old('lampiran', '-') }}" required
                         class="w-full px-4 py-2.5 text-sm border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('lampiran') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror"
-                        placeholder="Contoh: 1 (satu) Berkas">
+                        placeholder="Contoh: 1 (satu) Berkas atau -">
                     @error('lampiran')<p class="mt-1.5 text-xs text-red-600 flex items-center gap-1"><span class="material-icons" style="font-size:13px!important;">error</span>{{ $message }}</p>@enderror
                 </div>
 
                 {{-- Hal --}}
                 <div class="md:col-span-2">
                     <label for="hal" class="block text-sm font-semibold text-slate-700 mb-1.5">
-                        Hal <span class="text-red-500">*</span>
+                        Hal / Perihal <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="hal" id="hal" value="{{ old('hal') }}" required
                         class="w-full px-4 py-2.5 text-sm border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('hal') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror"
@@ -142,16 +197,11 @@
                 {{-- Tujuan Surat --}}
                 <div class="md:col-span-2">
                     <label for="tujuan_surat" class="block text-sm font-semibold text-slate-700 mb-1.5">
-                        Tujuan Surat <span class="text-red-500">*</span>
+                        Tujuan Surat / Penerima <span class="text-red-500">*</span>
                     </label>
-                    @php $tujuanList = ['Kepala kantor','Kasubbag TU','PHU','Bimas Islam','Pend. Agama & Keagamaaan Islam','Pend. Madrasah','Penyelenggara Zakat dan Wakaf','Penyelenggara Kristen','Penyelenggara Katolik','Perencana','Keuangan','Kepegawaian','Barang Milik Negara','Humas','Umum']; @endphp
-                    <select name="tujuan_surat" id="tujuan_surat" required
-                        class="w-full px-4 py-2.5 text-sm border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('tujuan_surat') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror">
-                        <option value="">-- Pilih Tujuan --</option>
-                        @foreach($tujuanList as $t)
-                        <option value="{{ $t }}" {{ old('tujuan_surat')==$t ? 'selected':'' }}>{{ $t }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="tujuan_surat" id="tujuan_surat" value="{{ old('tujuan_surat') }}" required
+                        class="w-full px-4 py-2.5 text-sm border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-400 @error('tujuan_surat') border-red-400 bg-red-50 @else border-slate-200 bg-white @enderror"
+                        placeholder="Contoh: Kepala Kantor Wilayah Kementerian Agama Provinsi Jawa Tengah">
                     @error('tujuan_surat')<p class="mt-1.5 text-xs text-red-600 flex items-center gap-1"><span class="material-icons" style="font-size:13px!important;">error</span>{{ $message }}</p>@enderror
                 </div>
 
@@ -219,6 +269,43 @@ function resetFileName() {
     if (display) {
         display.textContent = 'Klik untuk pilih file scan surat';
         display.style.color = '';
+    }
+}
+
+async function generateNomorSurat(applyToInput = true) {
+    const unit = document.getElementById('gen_unit').value;
+    const klasifikasi = document.getElementById('gen_klasifikasi').value;
+    const tanggal = document.getElementById('tanggal_surat').value;
+    const previewText = document.getElementById('gen_preview_text');
+
+    previewText.textContent = 'Menghitung nomor surat...';
+    previewText.classList.add('animate-pulse');
+
+    try {
+        const res = await fetch(`{{ route('suratkeluar.generateNomor') }}?unit=${encodeURIComponent(unit)}&klasifikasi=${encodeURIComponent(klasifikasi)}&tanggal=${encodeURIComponent(tanggal)}`);
+        const data = await res.json();
+
+        previewText.classList.remove('animate-pulse');
+        if (data.nomor_surat) {
+            previewText.textContent = data.nomor_surat;
+
+            if (applyToInput) {
+                const nomorInput = document.getElementById('nomor_surat');
+                const klasifikasiInput = document.getElementById('kode_klasifikasi');
+                if (nomorInput) {
+                    nomorInput.value = data.nomor_surat;
+                    nomorInput.classList.add('bg-amber-50', 'border-amber-400');
+                    setTimeout(() => nomorInput.classList.remove('bg-amber-50', 'border-amber-400'), 1500);
+                }
+                if (klasifikasiInput) {
+                    klasifikasiInput.value = klasifikasi;
+                }
+            }
+        }
+    } catch (e) {
+        console.error(e);
+        previewText.classList.remove('animate-pulse');
+        previewText.textContent = 'Gagal generate nomor.';
     }
 }
 </script>

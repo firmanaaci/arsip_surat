@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role',['admin','user'])->default('user');
+            $table->enum('role',['admin','pimpinan','staf'])->default('staf');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -40,16 +40,22 @@ return new class extends Migration
         });
         
         DB::table('users')->insert([
-            'name' => 'Admin',
+            'name' => 'Admin Arsiparis',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin1'),
             'role' => 'admin'
         ]);
         DB::table('users')->insert([
-            'name' => 'User',
-            'email' => 'user@gmail.com',
-            'password' => Hash::make('user1'),
-            'role' => 'user'
+            'name' => 'Kepala Kantor',
+            'email' => 'pimpinan@gmail.com',
+            'password' => Hash::make('pimpinan1'),
+            'role' => 'pimpinan'
+        ]);
+        DB::table('users')->insert([
+            'name' => 'Staf Pelaksana',
+            'email' => 'staf@gmail.com',
+            'password' => Hash::make('staf1'),
+            'role' => 'staf'
         ]);
     }
 

@@ -16,7 +16,10 @@ class CreateSuratKeluarsTable extends Migration
             $table->string('lampiran');
             $table->string('hal');
             $table->string('tujuan_surat');
-            $table->string('file_path'); // path file upload
+            $table->string('kode_klasifikasi')->nullable();
+            $table->string('kode_verifikasi')->nullable()->unique();
+            $table->string('file_path')->nullable(); // path file upload
+            $table->softDeletes();
             $table->timestamps();
         });
     }
