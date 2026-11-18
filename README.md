@@ -1,15 +1,13 @@
-* [ ] 
-
-# 🏛️ E-Arsip Surat Digital Kementerian Agama (Kemenag)
+# 🏛️ Arsip Surat Digital Kementerian Agama
 
 <p align="center">
   <img src="public/logokemenag.png" alt="Logo Kemenag" width="100">
 </p>
 
 <p align="center">
-  <b>Sistem Informasi Tata Kelola, Pengarsipan Surat, Disposisi Elektronik, dan Verifikasi Keaslian Dokumen Digital</b>
+  <b>Sistem Informasi Pengelolaan Surat Masuk, Surat Keluar, Disposisi, Laporan, dan Audit Arsip Digital</b>
   <br>
-  <i>Dirancang sesuai standar regulasi tata persuratan dinas Kementerian Agama Republik Indonesia (KMA No. 9 Tahun 2016).</i>
+  <i>Aplikasi arsip surat untuk mendukung tata kelola administrasi Kantor Kementerian Agama Kota Surakarta.</i>
 </p>
 
 <p align="center">
@@ -18,7 +16,6 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS v4">
   <img src="https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white" alt="Alpine.js">
   <img src="https://img.shields.io/badge/SweetAlert2-v11-7066E0?style=for-the-badge&logo=javascript&logoColor=white" alt="SweetAlert2">
-  <img src="https://img.shields.io/badge/Tests-34%20Passed-10B981?style=for-the-badge&logo=pest&logoColor=white" alt="Tests Passed">
 </p>
 
 ---
@@ -39,9 +36,9 @@
 
 ## 📖 Tentang Sistem
 
-**E-Arsip Kemenag** adalah aplikasi manajemen persuratan digital terintegrasi yang memudahkan unit kerja di lingkungan Kantor Kementerian Agama dalam mendigitalkan alur surat masuk, penerbitan surat keluar, penomoran otomatis sesuai kode klasifikasi KMA, pembuatan disposisi pimpinan, serta verifikasi keaslian dokumen berbasis **QR Code & UUID** yang dapat diakses publik.
+**E-Arsip Kemenag** adalah aplikasi manajemen persuratan digital terintegrasi untuk mendigitalkan surat masuk, surat keluar, disposisi pimpinan, penomoran otomatis, pencarian arsip, laporan, dan audit aktivitas. Aplikasi mengutamakan kemudahan penggunaan, keamanan, performa, serta rekam jejak pengelolaan data.
 
-Aplikasi ini mengedepankan prinsip **keamanan tingkat tinggi, kemudahan penggunaan (*user-friendly*), performa cepat, dan kepatuhan terhadap audit (*audit trail*).**
+Aplikasi ini mengedepankan prinsip **keamanan tingkat tinggi, kemudahan penggunaan (_user-friendly_), performa cepat, dan kepatuhan terhadap audit (_audit trail_).**
 
 ---
 
@@ -50,16 +47,16 @@ Aplikasi ini mengedepankan prinsip **keamanan tingkat tinggi, kemudahan pengguna
 ### 1. 📊 Executive Dashboard & Real-Time Analytics
 
 - **KPI Card Metrik**: Total Surat Masuk, Surat Keluar, Disposisi Aktif, dan Rasio Digitalisasi Berkas.
-- **Tracker Tindak Lanjut Disposisi**: Memantau disposisi yang berstatus *Menunggu*, *Sedang Diproses*, dan *Selesai*.
+- **Tracker Tindak Lanjut Disposisi**: Memantau disposisi yang berstatus _Menunggu_, _Sedang Diproses_, dan _Selesai_.
 - **Grafik Tren 12 Bulan**: Visualisasi volume pergerakan surat masuk dan keluar tahun berjalan.
 - **Distribusi Kode Klasifikasi KMA**: Analisis kategori urusan surat yang paling sering diterbitkan.
 
 ### 2. ⚡ Penomoran Otomatis Surat Keluar (KMA No. 9 Tahun 2016)
 
 - Generator nomor surat dinas otomatis dengan format baku:
-  $$
-  \text{B-}[NoUrut]/\text{Kk.13.04}/[UnitKerja]/[\text{KodeKlasifikasi}]/[BulanRomawi]/[Tahun]
-  $$
+    $$
+    \text{B-}[NoUrut]/\text{Kk.13.04}/[UnitKerja]/[\text{KodeKlasifikasi}]/[BulanRomawi]/[Tahun]
+    $$
 - Terintegrasi langsung dengan master kode klasifikasi Kemenag (Kepegawaian `KP`, Tata Usaha `OT`, Keuangan `KU`, Humas `HM`, Pendidikan Madrasah, Bimas Islam, dll.).
 
 ### 3. 📋 Sistem Disposisi Elektronik & Cetak Lembar Resmi
@@ -68,27 +65,35 @@ Aplikasi ini mengedepankan prinsip **keamanan tingkat tinggi, kemudahan pengguna
 - Penerima disposisi dapat memperbarui catatan dan laporan hasil tindak lanjut.
 - **Cetak Lembar Disposisi Standar Kemenag**: Format tata letak cetak resmi siap pakai (A4) lengkap dengan Kop Instansi, identitas surat, checklist instruksi, dan kolom paraf.
 
-### 4. 🛡️ Verifikasi Keaslian Dokumen via Smart QR Code & UUID
+### 4. 🔎 Pencarian dan Pengelolaan Arsip
 
-- Setiap surat secara otomatis dilengkapi dengan **UUID (Universally Unique Identifier)** acak 36 karakter yang anti-tebak dan anti-pemalsuan.
-- **Portal Verifikasi Publik**: Masyarakat atau pihak eksternal dapat memindai QR Code di surat fisik menggunakan kamera ponsel tanpa perlu login untuk memvalidasi keaslian dokumen resmi Kemenag.
-- Dukungan deteksi otomatis IP jaringan lokal (Wi-Fi/LAN) untuk pengujian *mobile scanning*.
+- Menampilkan daftar surat masuk dan surat keluar secara terstruktur.
+- Pencarian berdasarkan informasi surat, nomor, tanggal, dan kata kunci relevan.
+- Lampiran surat dapat dipratinjau dan diunduh langsung dari halaman detail.
+- Data arsip dapat diubah, dipindahkan ke tempat sampah, dipulihkan, atau dihapus permanen sesuai hak akses.
 
-### 5. 📜 Log Aktivitas & Rekam Jejak (Audit Trail)
+### 5. 📈 Laporan dan Rekap Arsip
+
+- Ekspor laporan surat masuk dan surat keluar dalam format PDF atau Excel.
+- Penyaringan laporan berdasarkan periode yang dibutuhkan.
+- Dashboard menampilkan tren surat 12 bulan terakhir.
+- Perubahan data dan aktivitas pengguna tercatat dalam audit trail.
+
+### 6. 📜 Log Aktivitas & Rekam Jejak (Audit Trail)
 
 - Pencatatan menyeluruh setiap ada aktivitas: `CREATE` (tambah), `UPDATE` (ubah), `DELETE` (hapus ke sampah), `RESTORE` (pulihkan), `FORCE_DELETE` (hapus permanen), `DOWNLOAD` (unduh/cetak), dan `LOGIN`.
-- Dilengkapi pencatatan nama pengguna, peran, modul target, timestamp, alamat IP, dan perangkat (*user-agent*).
+- Dilengkapi pencatatan nama pengguna, peran, modul target, timestamp, alamat IP, dan perangkat (_user-agent_).
 - Filter canggih berdasarkan teks, jenis aksi, pengguna, dan rentang tanggal.
 
-### 6. 🗑️ Perlindungan Data Anti-Kehilangan (Soft Deletes & Tempat Sampah)
+### 7. 🗑️ Perlindungan Data Anti-Kehilangan (Soft Deletes & Tempat Sampah)
 
-- Penghapusan data surat tidak langsung menghapus fisik berkas dari server, melainkan masuk ke **Tempat Sampah (*Recycle Bin*)**.
-- Fitur **Pulihkan (*Restore*)** data satu per satu.
-- Fitur **Musnahkan (*Force Delete*)** dan **Kosongkan Tempat Sampah** dengan konfirmasi SweetAlert2.
+- Penghapusan data surat tidak langsung menghapus fisik berkas dari server, melainkan masuk ke **Tempat Sampah (_Recycle Bin_)**.
+- Fitur **Pulihkan (_Restore_)** data satu per satu.
+- Fitur **Musnahkan (_Force Delete_)** dan **Kosongkan Tempat Sampah** dengan konfirmasi SweetAlert2.
 
-### 7. 🔔 Notifikasi Dialog Interaktif (SweetAlert2 Terpusat)
+### 8. 🔔 Notifikasi Dialog Interaktif (SweetAlert2 Terpusat)
 
-- Modal dialog modern di tengah layar dengan animasi sukses, error, peringatan, dan hitung mundur otomatis (*auto-timer*).
+- Modal dialog modern di tengah layar dengan animasi sukses, error, peringatan, dan hitung mundur otomatis (_auto-timer_).
 - Konfirmasi penghapusan data elegan menggantikan dialog bawaan browser yang kaku.
 
 ---
@@ -97,11 +102,11 @@ Aplikasi ini mengedepankan prinsip **keamanan tingkat tinggi, kemudahan pengguna
 
 Aplikasi menerapkan **Role-Based Access Control** dengan 3 tingkatan hak akses:
 
-| Peran (*Role*)                                  | Hak Akses & Wewenang                                                                                                                                                                |
-| :------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Arsiparis / Administrator (`admin`)**   | Akses penuh ke seluruh sistem: input & kelola surat masuk/keluar, scan dokumen, kelola akun pengguna, buka audit trail, serta mengelola tempat sampah (*restore / force delete*). |
-| **Kepala Kantor / Pimpinan (`pimpinan`)** | Akses dashboard analitik eksekutif, meninjau seluruh arsip surat, membuat & mencetak lembar disposisi, dan memantau log aktivitas.                                                  |
-| **Kepala Seksi / Staf Pengolah (`staf`)** | Mengakses daftar surat masuk dan lembar disposisi yang ditugaskan ke unit kerjanya, serta mengunggah progres/laporan hasil tindak lanjut.                                           |
+| Peran (_Role_)                            | Hak Akses & Wewenang                                                                                                                                                              |
+| :---------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Arsiparis / Administrator (`admin`)**   | Akses penuh ke seluruh sistem: input & kelola surat masuk/keluar, scan dokumen, kelola akun pengguna, buka audit trail, serta mengelola tempat sampah (_restore / force delete_). |
+| **Kepala Kantor / Pimpinan (`pimpinan`)** | Akses dashboard analitik eksekutif, meninjau seluruh arsip surat, membuat & mencetak lembar disposisi, dan memantau log aktivitas.                                                |
+| **Kepala Seksi / Staf Pengolah (`staf`)** | Mengakses daftar surat masuk dan lembar disposisi yang ditugaskan ke unit kerjanya, serta mengunggah progres/laporan hasil tindak lanjut.                                         |
 
 ---
 
@@ -137,8 +142,8 @@ Ikuti langkah-langkah berikut untuk menjalankan aplikasi di lingkungan lokal:
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/firmanaamri/arsip_surat_kemenag.git
-cd arsip_surat_kemenag
+git clone https://github.com/firmanaaci/arsip_surat.git
+cd arsip_surat
 ```
 
 ### 2. Install Dependensi PHP & Node.js
@@ -195,13 +200,13 @@ Aplikasi kini dapat dibuka di peramban pada alamat:
 
 ## 🔑 Akun Pengguna Default
 
-Database seeder telah menyediakan 3 akun uji coba siap pakai:
+Seeder utama menyediakan akun administrator berikut:
 
-| Role / Jabatan                      | Alamat Email           | Password Default |
-| :---------------------------------- | :--------------------- | :--------------- |
-| **Arsiparis (Administrator)** | `admin@gmail.com`    | `admin1`       |
-| **Kepala Kantor (Pimpinan)**  | `pimpinan@gmail.com` | `pimpinan1`    |
-| **Staf Pelaksana**            | `staf@gmail.com`     | `staf1`        |
+| Peran / Jabatan   | Alamat Email      | Password Default |
+| :---------------- | :---------------- | :--------------- |
+| **Administrator** | `admin@gmail.com` | `admin1`         |
+
+Database seeder juga membuat akun uji `test@example.com` dengan password `password` dan peran `user`.
 
 ---
 
