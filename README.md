@@ -1,4 +1,4 @@
-# 🏛️ Arsip Surat Digital Kementerian Agama
+# Arsip Surat Digital Kemenag Solo
 
 <p align="center">
   <img src="public/logokemenag.png" alt="Logo Kemenag" width="100">
@@ -20,7 +20,7 @@
 
 ---
 
-## 📌 Daftar Isi
+## Daftar Isi
 
 - [Tentang Sistem](#-tentang-sistem)
 - [Fitur Utama &amp; Keunggulan](#-fitur-utama--keunggulan)
@@ -34,7 +34,7 @@
 
 ---
 
-## 📖 Tentang Sistem
+## Tentang Sistem
 
 **E-Arsip Kemenag** adalah aplikasi manajemen persuratan digital terintegrasi untuk mendigitalkan surat masuk, surat keluar, disposisi pimpinan, penomoran otomatis, pencarian arsip, laporan, dan audit aktivitas. Aplikasi mengutamakan kemudahan penggunaan, keamanan, performa, serta rekam jejak pengelolaan data.
 
@@ -42,16 +42,16 @@ Aplikasi ini mengedepankan prinsip **keamanan tingkat tinggi, kemudahan pengguna
 
 ---
 
-## ✨ Fitur Utama & Keunggulan
+## Fitur Utama & Keunggulan
 
-### 1. 📊 Executive Dashboard & Real-Time Analytics
+### 1. Executive Dashboard & Real-Time Analytics
 
 - **KPI Card Metrik**: Total Surat Masuk, Surat Keluar, Disposisi Aktif, dan Rasio Digitalisasi Berkas.
 - **Tracker Tindak Lanjut Disposisi**: Memantau disposisi yang berstatus _Menunggu_, _Sedang Diproses_, dan _Selesai_.
 - **Grafik Tren 12 Bulan**: Visualisasi volume pergerakan surat masuk dan keluar tahun berjalan.
 - **Distribusi Kode Klasifikasi KMA**: Analisis kategori urusan surat yang paling sering diterbitkan.
 
-### 2. ⚡ Penomoran Otomatis Surat Keluar (KMA No. 9 Tahun 2016)
+### 2. Penomoran Otomatis Surat Keluar (KMA No. 9 Tahun 2016)
 
 - Generator nomor surat dinas otomatis dengan format baku:
     $$
@@ -59,46 +59,46 @@ Aplikasi ini mengedepankan prinsip **keamanan tingkat tinggi, kemudahan pengguna
     $$
 - Terintegrasi langsung dengan master kode klasifikasi Kemenag (Kepegawaian `KP`, Tata Usaha `OT`, Keuangan `KU`, Humas `HM`, Pendidikan Madrasah, Bimas Islam, dll.).
 
-### 3. 📋 Sistem Disposisi Elektronik & Cetak Lembar Resmi
+### 3. Sistem Disposisi Elektronik & Cetak Lembar Resmi
 
 - Pimpinan dapat mendisposisikan surat masuk ke Kepala Seksi / Kasubbag TU dalam hitungan detik.
 - Penerima disposisi dapat memperbarui catatan dan laporan hasil tindak lanjut.
 - **Cetak Lembar Disposisi Standar Kemenag**: Format tata letak cetak resmi siap pakai (A4) lengkap dengan Kop Instansi, identitas surat, checklist instruksi, dan kolom paraf.
 
-### 4. 🔎 Pencarian dan Pengelolaan Arsip
+### 4. Pencarian dan Pengelolaan Arsip
 
 - Menampilkan daftar surat masuk dan surat keluar secara terstruktur.
 - Pencarian berdasarkan informasi surat, nomor, tanggal, dan kata kunci relevan.
 - Lampiran surat dapat dipratinjau dan diunduh langsung dari halaman detail.
 - Data arsip dapat diubah, dipindahkan ke tempat sampah, dipulihkan, atau dihapus permanen sesuai hak akses.
 
-### 5. 📈 Laporan dan Rekap Arsip
+### 5. Laporan dan Rekap Arsip
 
 - Ekspor laporan surat masuk dan surat keluar dalam format PDF atau Excel.
 - Penyaringan laporan berdasarkan periode yang dibutuhkan.
 - Dashboard menampilkan tren surat 12 bulan terakhir.
 - Perubahan data dan aktivitas pengguna tercatat dalam audit trail.
 
-### 6. 📜 Log Aktivitas & Rekam Jejak (Audit Trail)
+### 6. Log Aktivitas & Rekam Jejak (Audit Trail)
 
 - Pencatatan menyeluruh setiap ada aktivitas: `CREATE` (tambah), `UPDATE` (ubah), `DELETE` (hapus ke sampah), `RESTORE` (pulihkan), `FORCE_DELETE` (hapus permanen), `DOWNLOAD` (unduh/cetak), dan `LOGIN`.
 - Dilengkapi pencatatan nama pengguna, peran, modul target, timestamp, alamat IP, dan perangkat (_user-agent_).
 - Filter canggih berdasarkan teks, jenis aksi, pengguna, dan rentang tanggal.
 
-### 7. 🗑️ Perlindungan Data Anti-Kehilangan (Soft Deletes & Tempat Sampah)
+### 7. Perlindungan Data Anti-Kehilangan (Soft Deletes & Tempat Sampah)
 
 - Penghapusan data surat tidak langsung menghapus fisik berkas dari server, melainkan masuk ke **Tempat Sampah (_Recycle Bin_)**.
 - Fitur **Pulihkan (_Restore_)** data satu per satu.
 - Fitur **Musnahkan (_Force Delete_)** dan **Kosongkan Tempat Sampah** dengan konfirmasi SweetAlert2.
 
-### 8. 🔔 Notifikasi Dialog Interaktif (SweetAlert2 Terpusat)
+### 8. Notifikasi Dialog Interaktif (SweetAlert2 Terpusat)
 
 - Modal dialog modern di tengah layar dengan animasi sukses, error, peringatan, dan hitung mundur otomatis (_auto-timer_).
 - Konfirmasi penghapusan data elegan menggantikan dialog bawaan browser yang kaku.
 
 ---
 
-## 👥 Hak Akses & Hierarki Pengguna (RBAC)
+## Hak Akses & Hierarki Pengguna (RBAC)
 
 Aplikasi menerapkan **Role-Based Access Control** dengan 3 tingkatan hak akses:
 
@@ -110,7 +110,7 @@ Aplikasi menerapkan **Role-Based Access Control** dengan 3 tingkatan hak akses:
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 - **Framework**: [Laravel 12](https://laravel.com/)
 - **Bahasa Pemrograman**: PHP 8.2+
@@ -124,7 +124,7 @@ Aplikasi menerapkan **Role-Based Access Control** dengan 3 tingkatan hak akses:
 
 ---
 
-## 💻 Persyaratan Sistem
+## Persyaratan Sistem
 
 Sebelum menjalankan aplikasi, pastikan komputer Anda telah terpasang:
 
@@ -135,7 +135,7 @@ Sebelum menjalankan aplikasi, pastikan komputer Anda telah terpasang:
 
 ---
 
-## 🚀 Panduan Instalasi & Menjalankan
+## Panduan Instalasi & Menjalankan
 
 Ikuti langkah-langkah berikut untuk menjalankan aplikasi di lingkungan lokal:
 
@@ -194,11 +194,11 @@ composer run dev
 ```
 
 Aplikasi kini dapat dibuka di peramban pada alamat:
-👉 **`http://localhost:8000`** atau **`http://127.0.0.1:8000`**
+**`http://localhost:8000`** atau **`http://127.0.0.1:8000`**
 
 ---
 
-## 🔑 Akun Pengguna Default
+## Akun Pengguna Default
 
 Seeder utama menyediakan akun administrator berikut:
 
@@ -210,7 +210,7 @@ Database seeder juga membuat akun uji `test@example.com` dengan password `passwo
 
 ---
 
-## 🧪 Pengujian Otomatis (Automated Tests)
+## Pengujian Otomatis (Automated Tests)
 
 Sistem telah dilengkapi dengan pengujian menyeluruh (Unit Test & Feature Test) menggunakan **Pest PHP**.
 
