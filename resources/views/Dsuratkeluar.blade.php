@@ -2,6 +2,8 @@
 
 @section('content')
 
+<div x-data="{}">
+
 {{-- ========================================================= --}}
 {{-- BREADCRUMB & PAGE HEADER                                   --}}
 {{-- ========================================================= --}}
@@ -27,7 +29,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold text-slate-800 leading-tight">Detail Surat Keluar</h1>
-                <p class="text-xs text-slate-400 mt-0.5">Informasi lengkap & verifikasi dokumen</p>
+                <p class="text-xs text-slate-400 mt-0.5">Informasi lengkap surat keluar</p>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -371,61 +373,6 @@
     {{-- ===================================================== --}}
     <div class="flex flex-col gap-6">
 
-        {{-- --- QR VERIFICATION CARD --- --}}
-        @php
-            $verifyUrl = \App\Services\QrCodeService::getVerificationUrl($surat->kode_verifikasi ?? $surat->nomor_surat);
-            $qrSvgUrl  = \App\Services\QrCodeService::generateSvg($verifyUrl, 140);
-        @endphp
-        <div class="bg-white rounded-2xl border border-emerald-200 shadow-sm overflow-hidden">
-            {{-- Header --}}
-            <div class="px-5 py-4 border-b border-emerald-100" style="background: linear-gradient(135deg, #f0fdf4, #ecfdf5);">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center">
-                        <span class="material-icons text-white" style="font-size:15px!important;">verified</span>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-emerald-800">Verifikasi Keaslian</p>
-                        <p class="text-[10px] text-emerald-600">Arsip Digital Kementerian Agama</p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- QR Code --}}
-            <div class="p-5 flex flex-col items-center text-center">
-                <div class="w-36 h-36 bg-white p-2.5 rounded-2xl border-2 border-emerald-200 shadow-md flex items-center justify-center mb-4">
-                    <img src="{{ $qrSvgUrl }}" alt="QR Code Verifikasi" class="w-full h-full object-contain">
-                </div>
-                <p class="text-xs font-semibold text-slate-700 mb-1">Pindai untuk verifikasi dokumen</p>
-                <p class="text-[11px] text-slate-400 leading-relaxed mb-4">
-                    Gunakan kamera ponsel atau Google Lens untuk membuka portal verifikasi resmi Kemenag.
-                </p>
-
-                {{-- UUID Badge --}}
-                @if($surat->kode_verifikasi)
-                <div class="w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 mb-4">
-                    <p class="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">UUID Verifikasi</p>
-                    <p class="font-mono text-[10px] text-slate-600 break-all leading-relaxed">{{ $surat->kode_verifikasi }}</p>
-                </div>
-                @endif
-
-                {{-- Action Buttons --}}
-                <div class="flex flex-col gap-2 w-full">
-                    <a href="{{ $verifyUrl }}" target="_blank"
-                        class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-bold text-white rounded-xl transition-all hover:scale-[1.02]"
-                        style="background: linear-gradient(135deg, #059669, #047857); box-shadow: 0 4px 12px rgba(5,150,105,0.35);">
-                        <span class="material-icons" style="font-size:15px!important;">open_in_new</span>
-                        Buka Halaman Verifikasi
-                    </a>
-                    <button type="button"
-                        onclick="navigator.clipboard.writeText('{{ $verifyUrl }}').then(() => { this.textContent = '✓ Tersalin!'; setTimeout(() => this.innerHTML = '<span class=\'material-icons\' style=\'font-size:14px!important;\'>content_copy</span> Salin URL Verifikasi', 2000) })"
-                        class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
-                        <span class="material-icons" style="font-size:14px!important;">content_copy</span>
-                        Salin URL Verifikasi
-                    </button>
-                </div>
-            </div>
-        </div>
-
         {{-- --- QUICK ACTIONS CARD --- --}}
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-100">
@@ -455,17 +402,6 @@
                     </div>
                 </a>
                 @endif
-
-                <a href="{{ $verifyUrl }}" target="_blank"
-                   class="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 border border-transparent transition-all group">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-200 transition-colors">
-                        <span class="material-icons" style="font-size:16px!important;">qr_code_scanner</span>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-700">Portal Verifikasi</p>
-                        <p class="text-[10px] text-slate-400">Validasi keaslian dokumen</p>
-                    </div>
-                </a>
 
                 <form action="{{ route('suratkeluar.destroy', $surat->id) }}" method="POST"
                       data-confirm-delete="Yakin ingin menghapus surat keluar '{{ $surat->nomor_surat }}'? Tindakan ini tidak dapat dibatalkan.">
@@ -511,6 +447,8 @@
     </div>{{-- end RIGHT column --}}
 
 </div>{{-- end grid --}}
+
+</div>{{-- end x-data wrapper --}}
 
 <script>
 function toggleViewerFullscreen() {

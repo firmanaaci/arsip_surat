@@ -50,6 +50,11 @@ class DisposisiController extends Controller
     {
         $disposisi = Disposisi::with('suratMasuk')->findOrFail($id);
 
+        // Jika status sudah Selesai, tidak boleh diubah lagi
+        if ($disposisi->status === 'Selesai') {
+            return redirect()->back()->with('error', 'Status disposisi yang sudah Selesai tidak dapat diubah kembali.');
+        }
+
         $validated = $request->validate([
             'status'                => 'required|in:Menunggu Tindak Lanjut,Sedang Diproses,Selesai',
             'catatan_tindak_lanjut' => 'nullable|string',

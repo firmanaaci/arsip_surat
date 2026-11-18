@@ -24,18 +24,8 @@ class SuratMasuk extends Model
         'isi_disposisi',
         'disposisi_kasubbag',
         'kode_klasifikasi',
-        'kode_verifikasi',
         'file',
     ];
-
-    protected static function booted()
-    {
-        static::creating(function ($surat) {
-            if (empty($surat->kode_verifikasi)) {
-                $surat->kode_verifikasi = (string) \Illuminate\Support\Str::uuid();
-            }
-        });
-    }
 
     public function disposisis()
     {

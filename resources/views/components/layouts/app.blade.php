@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -176,6 +176,75 @@
             if (event.persisted || (window.performance && window.performance.getEntriesByType && window.performance.getEntriesByType("navigation")[0]?.type === "back_forward")) {
                 window.location.reload();
             }
+        });
+
+        // SPA navigation: ambil halaman baru lalu jalankan ulang script-nya
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('#sidebar a[href], main a[href]');
+            if (!link) return;
+
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+            event.preventDefault();
+
+            fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(response => {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.text();
+                })
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const newMain = doc.querySelector('main');
+                    const newSidebar = doc.querySelector('#sidebar');
+
+                    if (!newMain) {
+                        window.location.assign(href);
+                        return;
+                    }
+
+                    document.querySelector('main').innerHTML = newMain.innerHTML;
+
+                    if (newSidebar) {
+                        const currentSidebar = document.querySelector('#sidebar');
+                        if (currentSidebar) currentSidebar.innerHTML = newSidebar.innerHTML;
+                    }
+
+                    if (doc.title) document.title = doc.title;
+                    history.pushState({}, '', href);
+
+                    const scripts = [...document.querySelector('main').querySelectorAll('script')];
+                    const runScripts = async () => {
+                        for (const oldScript of scripts) {
+                            if (oldScript.type === 'application/json') continue;
+
+                            const script = document.createElement('script');
+                            for (const attr of oldScript.attributes) {
+                                script.setAttribute(attr.name, attr.value);
+                            }
+
+                            if (oldScript.src) {
+                                await new Promise(resolve => {
+                                    script.onload = resolve;
+                                    script.onerror = resolve;
+                                    oldScript.replaceWith(script);
+                                });
+                            } else {
+                                script.textContent = oldScript.textContent;
+                                oldScript.replaceWith(script);
+                            }
+                        }
+                    };
+
+                    runScripts();
+                    document.querySelector('main').scrollTo({ top: 0, behavior: 'instant' });
+                })
+                .catch(() => window.location.assign(href));
+        });
+
+        window.addEventListener('popstate', function () {
+            window.location.reload();
         });
     </script>
 

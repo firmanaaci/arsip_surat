@@ -30,41 +30,47 @@
         <span class="text-slate-600 text-sm font-medium">Detail & Disposisi</span>
     </div>
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
-                <span class="material-icons text-white" style="font-size:18px!important;">move_to_inbox</span>
+    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
+                <span class="material-icons text-white" style="font-size:20px!important;">move_to_inbox</span>
             </div>
-            Detail & Disposisi Surat Masuk
-        </h1>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">Detail & Disposisi Surat Masuk</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-mono">{{ $surat->nomor_surat }}</p>
+            </div>
+        </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-            {{-- Tombol Cetak Lembar Disposisi --}}
-            <a href="{{ route('disposisi.cetak', $surat->id) }}" target="_blank"
-                class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all shadow-sm">
-                <span class="material-icons text-emerald-600" style="font-size:16px!important;">print</span>
-                Cetak Lembar Disposisi
-            </a>
-
-            {{-- Tombol Buat Disposisi --}}
-            <button type="button" @click="showDisposisiModal = true"
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white rounded-xl shadow-sm transition-all hover:-translate-y-0.5"
-                style="background:linear-gradient(135deg,#3b82f6,#2563eb); box-shadow:0 4px 14px rgba(59,130,246,0.35);">
-                <span class="material-icons" style="font-size:16px!important;">add_task</span>
-                + Buat Disposisi
-            </button>
-
-            {{-- Edit & Kembali --}}
-            <a href="{{ route('suratmasuk.edit', $surat->id) }}"
-                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 transition-all">
-                <span class="material-icons" style="font-size:16px!important;">edit</span>
-                Edit
-            </a>
+        {{-- Action Buttons Toolbar --}}
+        <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full xl:w-auto">
+            {{-- Kembali --}}
             <a href="{{ route('suratmasuk.index') }}"
-                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
-                <span class="material-icons" style="font-size:16px!important;">arrow_back</span>
+                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm">
+                <span class="material-icons text-slate-400" style="font-size:17px!important;">arrow_back</span>
                 Kembali
             </a>
+
+            {{-- Edit Surat --}}
+            <a href="{{ route('suratmasuk.edit', $surat->id) }}"
+                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+                <span class="material-icons text-amber-500" style="font-size:17px!important;">edit</span>
+                Edit
+            </a>
+
+            {{-- Cetak Lembar Disposisi --}}
+            <a href="{{ route('disposisi.cetak', $surat->id) }}" target="_blank"
+                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+                <span class="material-icons text-emerald-600" style="font-size:17px!important;">print</span>
+                Cetak Disposisi
+            </a>
+
+            {{-- Buat Disposisi (Primary Action) --}}
+            <button type="button" @click="showDisposisiModal = true"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white rounded-xl shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style="background:linear-gradient(135deg,#2563eb,#1d4ed8); box-shadow:0 4px 14px rgba(37,99,235,0.25);">
+                <span class="material-icons" style="font-size:17px!important;">add_task</span>
+                + Buat Disposisi
+            </button>
         </div>
     </div>
 </div>
@@ -249,58 +255,6 @@
     </div>
 </div>
 
-{{-- Smart Digital Verification & QR Code Banner --}}
-<div class="mb-6 p-5 rounded-2xl border border-emerald-200/80 shadow-sm relative overflow-hidden bg-white"
-    style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);">
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-        <div class="flex items-start gap-4">
-            {{-- QR Code Image --}}
-            @php
-                $verifyUrl = \App\Services\QrCodeService::getVerificationUrl($surat->kode_verifikasi ?? $surat->nomor_surat);
-                $qrSvgUrl = \App\Services\QrCodeService::generateSvg($verifyUrl, 140);
-            @endphp
-            <div class="w-24 h-24 sm:w-28 sm:h-28 bg-white p-2 rounded-2xl border border-emerald-200 shadow-sm flex items-center justify-center flex-shrink-0">
-                <img src="{{ $qrSvgUrl }}" alt="QR Code Verifikasi" class="w-full h-full object-contain">
-            </div>
-            <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                        <span class="material-icons" style="font-size:13px!important;">verified</span>
-                        QR Code Terverifikasi Sah
-                    </span>
-                    @if($surat->kode_klasifikasi)
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-blue-100 text-blue-800">
-                        Kode: {{ $surat->kode_klasifikasi }}
-                    </span>
-                    @endif
-                </div>
-                <h3 class="text-base font-bold text-slate-800">Verifikasi Keaslian Arsip Surat Masuk</h3>
-                <p class="text-xs text-slate-600 mt-0.5 max-w-lg">
-                    Pindai QR Code untuk memvalidasi keaslian dokumen resmi di Portal Publik Kementerian Agama.
-                </p>
-                <p class="text-[11px] font-mono text-emerald-700 font-semibold mt-1">
-                    UUID: {{ $surat->kode_verifikasi ?? '-' }}
-                </p>
-            </div>
-        </div>
-
-        {{-- Action Buttons --}}
-        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto">
-            <a href="{{ $verifyUrl }}" target="_blank"
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-bold text-white rounded-xl shadow-sm transition-all hover:scale-105"
-                style="background: linear-gradient(135deg, #059669, #047857);">
-                <span class="material-icons" style="font-size:16px!important;">open_in_new</span>
-                Buka Halaman Verifikasi
-            </a>
-            <button type="button" onclick="navigator.clipboard.writeText('{{ $verifyUrl }}'); alert('Tautan verifikasi berhasil disalin!')"
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
-                <span class="material-icons" style="font-size:16px!important;">content_copy</span>
-                Salin URL
-            </button>
-        </div>
-    </div>
-</div>
-
 {{-- ===== RIWAYAT DISPOSISI & TINDAK LANJUT ===== --}}
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
     <div class="px-7 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gradient-to-r from-slate-50 to-white">
@@ -401,23 +355,32 @@
                                 ID Disposisi: #DSP-{{ $disp->id }}
                             </span>
                             <div class="flex items-center gap-2">
-                                <button type="button"
-                                    @click="openTindakLanjut('{{ route('disposisi.updateStatus', $disp->id) }}', '{{ $disp->status }}', '{{ addslashes($disp->catatan_tindak_lanjut ?? '') }}')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 rounded-xl hover:bg-cyan-100 transition">
-                                    <span class="material-icons" style="font-size:14px!important;">update</span>
-                                    Update Tindak Lanjut
-                                </button>
-
-                                <form action="{{ route('disposisi.destroy', $disp->id) }}" method="POST" class="inline"
-                                    data-confirm-delete="Yakin ingin menghapus lembar disposisi #DSP-{{ $disp->id }} ini?">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition">
-                                        <span class="material-icons" style="font-size:14px!important;">delete_outline</span>
+                                @if ($disp->status === 'Selesai')
+                                    {{-- Status terkunci, tidak bisa diubah --}}
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                        <span class="material-icons" style="font-size:14px!important;">lock</span>
+                                        Terkunci – Sudah Selesai
+                                    </span>
+                                @else
+                                    <button type="button"
+                                        @click="openTindakLanjut('{{ route('disposisi.updateStatus', $disp->id) }}', '{{ $disp->status }}', '{{ addslashes($disp->catatan_tindak_lanjut ?? '') }}')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 rounded-xl hover:bg-cyan-100 transition">
+                                        <span class="material-icons" style="font-size:14px!important;">update</span>
+                                        Update Tindak Lanjut
                                     </button>
-                                </form>
+
+                                    <form action="{{ route('disposisi.destroy', $disp->id) }}" method="POST" class="inline"
+                                        data-confirm-delete="Yakin ingin menghapus lembar disposisi #DSP-{{ $disp->id }} ini?">
+                                        @csrf @method('DELETE')
+                                        <button type="submit"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition">
+                                            <span class="material-icons" style="font-size:14px!important;">delete_outline</span>
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
+
                     </div>
                 @endforeach
             </div>
@@ -479,7 +442,7 @@
         {{-- File Integrity Fingerprint Bar --}}
         <div class="mb-5 rounded-xl bg-slate-50 border border-slate-200/80 overflow-hidden">
             <div class="px-4 py-2.5 border-b border-slate-200/80">
-                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Integritas & Metadata Teknis</p>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Integritas & Metadata Teknis</p>
             </div>
             <div class="p-4 flex flex-col gap-3 text-xs">
                 {{-- Row 1: Size + Format (2 columns, no overflow) --}}
@@ -874,7 +837,103 @@
     </div>
 </div>
 
+{{-- ============================================================ --}}
+{{-- MODAL VERIFIKASI KEASLIAN ===== --}}
+<div x-show="showVerifikasiModal" x-cloak
+    class="fixed inset-0 z-[999] flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+
+    <div @click.outside="showVerifikasiModal = false"
+        class="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95">
+
+        {{-- Loading state --}}
+        <template x-if="verifikasiLoading">
+            <div class="p-12 flex flex-col items-center justify-center gap-4">
+                <div class="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                <p class="text-sm text-slate-500 font-medium">Memverifikasi dokumen...</p>
+            </div>
+        </template>
+
+        {{-- Valid --}}
+        <template x-if="!verifikasiLoading && verifikasiData && verifikasiData.valid">
+            <div>
+                <div class="p-6 text-white text-center relative overflow-hidden" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                    <button @click="showVerifikasiModal = false" class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                        <span class="material-icons" style="font-size:20px">close</span>
+                    </button>
+                    <div class="w-14 h-14 rounded-2xl bg-white/20 border-2 border-white/40 flex items-center justify-center mx-auto mb-3">
+                        <span class="material-icons text-white" style="font-size:32px!important;">verified</span>
+                    </div>
+                    <h2 class="text-lg font-extrabold">DOKUMEN RESMI TERVERIFIKASI</h2>
+                    <p class="text-emerald-100 text-xs mt-1">Tercatat sah dalam arsip digital Kementerian Agama</p>
+                    <span class="inline-block mt-2 px-3 py-0.5 bg-white/20 rounded-full text-[11px] font-bold" x-text="verifikasiData.jenis"></span>
+                </div>
+                <div class="p-6 space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="col-span-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Nomor Surat</p>
+                            <p class="text-sm font-bold text-slate-800 font-mono" x-text="verifikasiData.nomor_surat"></p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Tanggal</p>
+                            <p class="text-xs font-semibold text-slate-700" x-text="verifikasiData.tanggal_surat"></p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Sifat</p>
+                            <p class="text-xs font-semibold text-amber-700" x-text="verifikasiData.sifat_surat"></p>
+                        </div>
+                        <div class="col-span-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Perihal</p>
+                            <p class="text-xs font-medium text-slate-700" x-text="verifikasiData.perihal"></p>
+                        </div>
+                        <div class="col-span-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Pengirim / Tujuan</p>
+                            <p class="text-xs font-semibold text-slate-800" x-text="verifikasiData.pengirim"></p>
+                        </div>
+                        <div class="col-span-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 mb-0.5">Waktu Pengarsipan Digital</p>
+                            <p class="text-[11px] font-mono text-emerald-800" x-text="verifikasiData.created_at"></p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-2">
+                        <button @click="showVerifikasiModal = false"
+                            class="px-5 py-2 text-sm font-semibold text-white rounded-xl transition"
+                            style="background: linear-gradient(135deg, #059669, #047857);">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        {{-- Tidak valid --}}
+        <template x-if="!verifikasiLoading && verifikasiData && !verifikasiData.valid">
+            <div>
+                <div class="p-6 text-white text-center" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <button @click="showVerifikasiModal = false" class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                        <span class="material-icons" style="font-size:20px">close</span>
+                    </button>
+                    <div class="w-14 h-14 rounded-2xl bg-white/20 border-2 border-white/40 flex items-center justify-center mx-auto mb-3">
+                        <span class="material-icons text-white" style="font-size:32px!important;">gpp_bad</span>
+                    </div>
+                    <h2 class="text-lg font-extrabold">DOKUMEN TIDAK DITEMUKAN</h2>
+                    <p class="text-red-100 text-xs mt-1">Kode verifikasi tidak terdaftar dalam sistem arsip.</p>
+                </div>
+                <div class="p-6 flex justify-end">
+                    <button @click="showVerifikasiModal = false"
+                        class="px-5 py-2 text-sm font-semibold bg-slate-800 text-white rounded-xl transition hover:bg-slate-900">Tutup</button>
+                </div>
+            </div>
+        </template>
+
+    </div>
 </div>
+
+</div>{{-- end x-data wrapper --}}
 
 <script>
 function toggleViewerFullscreenSM() {

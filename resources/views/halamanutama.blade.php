@@ -5,7 +5,7 @@
 {{-- ========================================================= --}}
 {{-- 1. HERO BANNER & QUICK ACTIONS                            --}}
 {{-- ========================================================= --}}
-<div class="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-slate-50 via-white to-emerald-50/40 p-6 sm:p-8 shadow-sm mb-6">
+<div class="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-linear-to-br from-slate-50 via-white to-emerald-50/40 p-6 sm:p-8 shadow-sm mb-6">
     <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-200/30 blur-3xl"></div>
     <div class="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-cyan-200/30 blur-3xl"></div>
     
@@ -71,7 +71,7 @@
     {{-- Card 2: Total Surat Keluar --}}
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
                 <span class="material-icons text-white" style="font-size:19px!important;">outbox</span>
             </div>
             <span class="text-[11px] text-amber-700 font-bold bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-100">
@@ -89,7 +89,7 @@
     {{-- Card 3: Status Alur Disposisi --}}
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#06b6d4,#0891b2);">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm" style="background:linear-gradient(135deg,#06b6d4,#0891b2);">
                 <span class="material-icons text-white" style="font-size:19px!important;">assignment</span>
             </div>
             <span class="text-[11px] text-cyan-700 font-bold bg-cyan-50 px-2.5 py-0.5 rounded-full border border-cyan-100">
@@ -114,7 +114,7 @@
     {{-- Card 4: Rasio Digitalisasi Arsip --}}
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#10b981,#059669);">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm" style="background:linear-gradient(135deg,#10b981,#059669);">
                 <span class="material-icons text-white" style="font-size:19px!important;">cloud_done</span>
             </div>
             <span class="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
@@ -329,8 +329,13 @@
                             @endif
                         </div>
                         <p class="text-xs text-slate-500 truncate">
-                            <span class="font-semibold text-slate-700">Dari:</span> {{ $sm->asal_surat }}
+                            <span class="font-semibold text-slate-700">Dari:</span> {{ $sm->pengirim ?? '-' }}
                         </p>
+                        @if($sm->tujuan_surat)
+                        <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                            <span class="font-semibold text-slate-700">Penerima:</span> {{ $sm->tujuan_surat }}
+                        </p>
+                        @endif
                     </div>
                     <div class="text-right flex-shrink-0">
                         <span class="text-[11px] text-slate-400 font-medium block">
@@ -409,7 +414,12 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-    const _data  = JSON.parse(document.getElementById('chart-data').textContent);
+(function () {
+    const dataEl = document.getElementById('chart-data');
+    const canvas = document.getElementById('suratChart');
+    if (!dataEl || !canvas || typeof Chart === 'undefined') return;
+
+    const _data = JSON.parse(dataEl.textContent);
     const labels = _data.labels;
     const masuk  = _data.masuk;
     const keluar = _data.keluar;
@@ -427,6 +437,9 @@
     const gradKeluar = ctx.createLinearGradient(0, 0, 0, isMobile ? 180 : 260);
     gradKeluar.addColorStop(0, 'rgba(245,158,11,0.22)');
     gradKeluar.addColorStop(1, 'rgba(245,158,11,0.01)');
+
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) existingChart.destroy();
 
     new Chart(ctx, {
         type: 'line',
@@ -511,6 +524,7 @@
             }
         }
     });
+})();
 </script>
 
 @endsection

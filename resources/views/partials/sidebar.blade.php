@@ -10,7 +10,7 @@
 @endphp
 
 <aside id="sidebar"
-    class="sidebar-panel fixed lg:static inset-y-0 left-0 z-50 lg:z-30 h-full flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0 sidebar-scrollbar"
+    class="sidebar-panel fixed lg:static inset-y-0 left-0 z-50 lg:z-30 h-full flex flex-col transition-all duration-300 overflow-hidden shrink-0 sidebar-scrollbar"
     :class="{
         'translate-x-0': sidebarOpen,
         '-translate-x-full lg:translate-x-0': !sidebarOpen,
@@ -30,7 +30,7 @@
     <div class="relative flex items-center pt-6 pb-5 border-b border-white/10 transition-all"
         :class="{ 'justify-center px-0': sidebarCollapsed, 'justify-between px-5': !sidebarCollapsed }">
         <div class="flex items-center gap-3 min-w-0" :class="{ 'justify-center': sidebarCollapsed }">
-            <div class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg"
+            <div class="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg"
                 style="background: linear-gradient(135deg, #10b981, #059669);">
                 <img src="{{ asset('logokemenag.png') }}" alt="Logo" class="w-6 h-6 object-contain">
             </div>
@@ -50,7 +50,7 @@
         :class="{ 'justify-center px-0': sidebarCollapsed, 'px-4 py-3 mx-3 rounded-2xl border border-white/10': !sidebarCollapsed }"
         :style="!sidebarCollapsed ? 'background: rgba(255,255,255,0.06); backdrop-filter: blur(10px);' : ''">
         <div class="flex items-center gap-3 min-w-0" :class="{ 'justify-center': sidebarCollapsed }">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md border border-white/10"
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md border border-white/10"
                 style="background: linear-gradient(135deg, #f59e0b, #d97706);"
                 :title="sidebarCollapsed ? '{{ $currentUser?->name ?? 'Admin' }} ({{ $currentUser?->role_label ?? 'Staff' }})' : ''">
                 {{ strtoupper(substr($currentUser?->name ?? 'A', 0, 1)) }}
@@ -84,7 +84,7 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->routeIs('dashboard') || request()->routeIs('halamanutama') ? 'text-white' : 'text-emerald-400/80 group-hover:text-emerald-300' }}">dashboard</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->routeIs('dashboard') || request()->routeIs('halamanutama') ? 'text-white' : 'text-emerald-400/80 group-hover:text-emerald-300' }}">dashboard</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Dashboard</span>
         </a>
 
@@ -101,7 +101,7 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->routeIs('inputsuratmasuk') ? 'text-white' : 'text-blue-400/80 group-hover:text-blue-300' }}">move_to_inbox</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->routeIs('inputsuratmasuk') ? 'text-white' : 'text-blue-400/80 group-hover:text-blue-300' }}">move_to_inbox</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Input Surat Masuk</span>
         </a>
 
@@ -117,7 +117,7 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->routeIs('inputsuratkeluar') ? 'text-white' : 'text-amber-400/80 group-hover:text-amber-300' }}">outbox</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->routeIs('inputsuratkeluar') ? 'text-white' : 'text-amber-400/80 group-hover:text-amber-300' }}">outbox</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Input Surat Keluar</span>
         </a>
         @endif
@@ -134,7 +134,7 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->routeIs('suratmasuk.index') ? 'text-white' : 'text-cyan-400/80 group-hover:text-cyan-300' }}">inbox</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->routeIs('suratmasuk.index') ? 'text-white' : 'text-cyan-400/80 group-hover:text-cyan-300' }}">inbox</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Tabel Surat Masuk</span>
         </a>
 
@@ -150,7 +150,7 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->routeIs('suratkeluar.index') ? 'text-white' : 'text-rose-400/80 group-hover:text-rose-300' }}">send</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->routeIs('suratkeluar.index') ? 'text-white' : 'text-rose-400/80 group-hover:text-rose-300' }}">send</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Tabel Surat Keluar</span>
         </a>
 
@@ -172,7 +172,7 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->is('laporan*') ? 'text-white' : 'text-violet-400/80 group-hover:text-violet-300' }}">assessment</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->is('laporan*') ? 'text-white' : 'text-violet-400/80 group-hover:text-violet-300' }}">assessment</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Laporan & Export</span>
         </a>
 
@@ -195,7 +195,7 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->routeIs('audit.index') ? 'text-white' : 'text-sky-400/80 group-hover:text-sky-300' }}">history</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->routeIs('audit.index') ? 'text-white' : 'text-sky-400/80 group-hover:text-sky-300' }}">history</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Log Aktivitas (Audit)</span>
         </a>
         @endif
@@ -207,14 +207,14 @@
             class="sidebar-link group flex items-center rounded-2xl text-sm font-medium transition-all duration-200 relative overflow-hidden
                 {{ request()->routeIs('recyclebin.index') ? 'sidebar-link-active' : 'text-slate-300 hover:text-white' }}"
             :class="{ 'justify-center w-11 h-11 mx-auto px-0': sidebarCollapsed, 'justify-between px-3.5 py-2.5': !sidebarCollapsed }"
-            :title="sidebarCollapsed ? 'Tempat Sampah' . ($trashedCount > 0 ? ' (' . $trashedCount . ' data)' : '') : ''">
+            :title="sidebarCollapsed ? 'Tempat Sampah{{ $trashedCount > 0 ? ' (' . $trashedCount . ' data)' : '' }}' : ''">
             @if(request()->routeIs('recyclebin.index'))
                 <div class="absolute inset-0 rounded-2xl" style="background: linear-gradient(135deg, #ef4444, #dc2626); opacity: 0.95;"></div>
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
             <div class="flex items-center min-w-0 relative" :class="{ 'justify-center': sidebarCollapsed, 'gap-3': !sidebarCollapsed }">
-                <span class="material-icons text-[21px] flex-shrink-0 {{ request()->routeIs('recyclebin.index') ? 'text-white' : 'text-rose-400/80 group-hover:text-rose-300' }}">delete_sweep</span>
+                <span class="material-icons text-[21px] shrink-0 {{ request()->routeIs('recyclebin.index') ? 'text-white' : 'text-rose-400/80 group-hover:text-rose-300' }}">delete_sweep</span>
                 <span class="truncate" x-show="!sidebarCollapsed" x-transition.opacity>Tempat Sampah</span>
             </div>
             @if($trashedCount > 0)
@@ -237,14 +237,14 @@
             @else
                 <div class="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-colors duration-200"></div>
             @endif
-            <span class="material-icons relative text-[21px] flex-shrink-0 {{ request()->routeIs('pengguna.index') ? 'text-white' : 'text-indigo-400/80 group-hover:text-indigo-300' }}">admin_panel_settings</span>
+            <span class="material-icons relative text-[21px] shrink-0 {{ request()->routeIs('pengguna.index') ? 'text-white' : 'text-indigo-400/80 group-hover:text-indigo-300' }}">admin_panel_settings</span>
             <span class="relative truncate" x-show="!sidebarCollapsed" x-transition.opacity>Kelola Pengguna</span>
         </a>
         @endif
 
     </nav>
 
-    <!-- Footer Logout -->
+    {{-- <!-- Footer Logout -->
     <div class="relative py-4 border-t border-white/10"
         :class="{ 'px-0 flex justify-center': sidebarCollapsed, 'px-4': !sidebarCollapsed }">
         <form method="POST" action="{{ route('logout') }}" :class="{ 'w-auto': sidebarCollapsed, 'w-full': !sidebarCollapsed }">
@@ -253,10 +253,10 @@
                 class="flex items-center rounded-2xl text-sm font-medium text-red-400/90 hover:text-red-300 hover:bg-red-500/15 transition-all group"
                 :class="{ 'justify-center w-11 h-11 mx-auto px-0': sidebarCollapsed, 'w-full px-3.5 py-2.5 gap-3': !sidebarCollapsed }"
                 :title="sidebarCollapsed ? 'Keluar dari Akun' : ''">
-                <span class="material-icons text-[21px] flex-shrink-0 group-hover:scale-110 transition-transform">logout</span>
+                <span class="material-icons text-[21px] shrink-0 group-hover:scale-110 transition-transform">logout</span>
                 <span class="truncate" x-show="!sidebarCollapsed" x-transition.opacity>Keluar</span>
             </button>
         </form>
         <p x-show="!sidebarCollapsed" x-transition.opacity class="text-white/20 text-[10px] text-center mt-2 tracking-wider">v1.0 © {{ date('Y') }} Kemenag</p>
-    </div>
+    </div> --}}
 </aside>

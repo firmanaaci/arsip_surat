@@ -53,16 +53,6 @@
                         <x-input-error :messages="$errors->get('password')" class="mt-1.5 text-sm text-red-500" />
                     </div>
 
-                    <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center">
-                            <input type="checkbox" name="remember" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
-                            <span class="ml-2 text-slate-600">Ingat saya</span>
-                        </label>
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="font-medium text-emerald-700 transition duration-200 hover:text-emerald-800 hover:underline">Lupa password?</a>
-                        @endif
-                    </div>
-
                     <div>
                         <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 py-3 font-semibold text-white shadow-lg shadow-emerald-800/20 transition duration-300 hover:-translate-y-0.5 hover:from-emerald-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                             Masuk

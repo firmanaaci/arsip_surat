@@ -11,7 +11,6 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 
 use App\Http\Controllers\DisposisiController;
-use App\Http\Controllers\VerifikasiController;
 use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\RecycleBinController;
 
@@ -28,9 +27,6 @@ Route::get('/landing', function () {
 })->name('landing');
 
 Route::get('/redirect', [UserController::class, 'redirectAfterLogin'])->name('user.redirect');
-
-// Public Document Authenticity Verification
-Route::get('/verifikasi/{kode}', [VerifikasiController::class, 'verify'])->name('verifikasi.public');
 
 // Authenticated Routes
 Route::middleware(['auth'])->group(function () {
